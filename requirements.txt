@@ -1,0 +1,22 @@
+# All required dependencies for this python project go here.
+
+# Data and Maths
+numpy
+pandas
+scipy
+
+# Visualisation
+matplotlib
+seaborn
+
+# Format and Code Checks
+black
+pylint
+flake8
+
+# Debugging
+icecream
+
+
+# Terminal
+rich
