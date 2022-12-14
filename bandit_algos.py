@@ -1,0 +1,1 @@
+''' Classes of the different multi-armed bandit algorithms. '''
