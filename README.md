@@ -1,4 +1,3 @@
-# CS50_Final_Project
 
 ### Hello and welcome to my CS50 final project. 
 
@@ -6,4 +5,4 @@ Here I will be exploring reinforcement learning (RL), a type of machine learning
 
 ---
 
-Once this project is complete, feel free to clone the repo and have a play around with the code, I will also include my references and links to their blogs/code at the bottom of the file. Jump straight there to see my inspiration!
+Once this project is complete, feel free to clone the repo and have a play around with the code, I will also include my references and links to their blogs/code at the bottom of the file. Jump straight there to see my inspirati
