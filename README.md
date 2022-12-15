@@ -18,9 +18,30 @@ This problem is also called the "explore or exploit" problem. The idea of when s
 
 ### 2.1. The Environment. 
 
-We need the environment to do several things for this problem. 1st, we need to set the number of bandits we need, then mean return of each bandit and the probability of us getting that reward. For now we are going to create a stationary bandit, where the reward remains the same through the process. However, later on, I will implement a bandit where the returns are dynamic, sampled from a reward distribution. This should make the problem slightly harder for the algorithms to learn from. 
+We need the environment to do several things for this problem. 1st, we need to set the number of bandits we need, then mean return of each bandit and the probability of us getting that reward. For now we are going to create a stationary bandit, where the reward remains the same through the process. However, later on, I will implement a bandit where the returns are dynamic, sampled from a reward distribution. This should make the problem slightly harder for the algorithms to learn from.
+
+For this set up, we are going to create and environment class, where we can create instances of the environment and pass them in as parameters when we are creating our agents. 
+
+The environment must do certain things.
+- Take in an array or rewards and reward probabilites as arguments.
+- Given an action, return the reward to the agent. 
 
 To create the environment, I will be using [OpenAI's Gym](https://www.gymlibrary.dev).
+
+### 2.2. Agents
+
+There are plenty of algorithms that have been created to solve bandit problems (Do not worry if some of them look scary, I will try my best to explain how each of them works). In this implementation of the problem, our agent will take in the environment as a parameter and conduct its actions. The actions thea agent takes and rewards of its actions will be stored in the agent (we need this compute several things when we get to the more difficult algorithms) and our agent should present these results to a few plotting functions that will create some nice shiny graphs for us.
+
+The agents I plan to implement are:
+    1. Random Agent.
+    2. Greedy Agent.
+    3. $\epsilon$-greedy Agent.
+    4. Upper Confidence Bound (UCB) Agent.
+    5. Thompson Sampling Agent. 
+
+#### The Random Agent.
+
+This agent has no concept of what is going on really, they simply just pull whatever bandit they want, regardless of reward, or how many times they have pulled it. This idea can be thought of as simply closing your eyes at the casino and pulling any of the slot machines you fancy.
 
 ---
 
@@ -29,4 +50,6 @@ To create the environment, I will be using [OpenAI's Gym](https://www.gymlibrary
 - [DeepMind x UCL Lectures](https://youtube.com/playlist?list=PLqYmG7hTraZDVH599EItlEWsUOsJbAodm) - Lectures 1 and 2 helped my mathematical and theoretical understanding of RL, multi-armed bandits and the algorithms. 
 
 - [Alejandro Aristzabal](https://medium.com/@alejandro.aristizabal24) - Has a great series on the multi-armed bandit problem, with code. 
+
+- [Edward Pie](https://www.youtube.com/watch?v=sNamSTJ4qCU) - Great explanation with some example code.
 
