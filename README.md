@@ -20,13 +20,13 @@ This problem is also called the "explore or exploit" problem. The idea of when s
 
 We need the environment to do several things for this problem. 1st, we need to set the number of bandits we need, then mean return of each bandit and the probability of us getting that reward. For now we are going to create a stationary bandit, where the reward remains the same through the process. However, later on, I will implement a bandit where the returns are dynamic, sampled from a reward distribution. This should make the problem slightly harder for the algorithms to learn from. 
 
-To create the environment, I will be using [OpenAI's Gym] (https://www.gymlibrary.dev).
+To create the environment, I will be using [OpenAI's Gym](https://www.gymlibrary.dev).
 
 ---
 
 ### References
 
-[DeepMind x UCL Lectures] (https://youtube.com/playlist?list=PLqYmG7hTraZDVH599EItlEWsUOsJbAodm) - Lectures 1 and 2 helped my mathematical and theoretical understanding of RL, multi-armed bandits and the algorithms. 
+- [DeepMind x UCL Lectures](https://youtube.com/playlist?list=PLqYmG7hTraZDVH599EItlEWsUOsJbAodm) - Lectures 1 and 2 helped my mathematical and theoretical understanding of RL, multi-armed bandits and the algorithms. 
 
-[Alejandro Aristzabal] (https://medium.com/@alejandro.aristizabal24) - Has a great series on the multi-armed bandit problem, with code. 
+- [Alejandro Aristzabal](https://medium.com/@alejandro.aristizabal24) - Has a great series on the multi-armed bandit problem, with code. 
 
