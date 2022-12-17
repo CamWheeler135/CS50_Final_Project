@@ -49,11 +49,11 @@ Before discussing this agent, I first need to introduce a concept of **evaluatin
 
 Let us define the **Action Value**.
 
-$$ q(a) = \mathbb{E} \space [R_t \space | A_t = a \space] $$
+$$ q(a) = \mathbb{E} \space [R_t \space | A_t = a] $$
 
 The action value $q(a)$, is the reward we expect to receive given that we take action $a$. A simple way to learn and estimate the action value is to average out the rewards we have received taking that specific action. This can be computed such that: 
 
-$$Q_t(a) = \frac{\sum^t_{n=1}I(A_n=a)R_n}{\sum^t_{n=1}I(A_n=a)}$$
+$$Q_t(a) = \frac{\sum_{n = 1}^t I(A_n = a)R_n}{\sum_{n = 1}^t I(A_n = a)}$$
 
 Our estimate of the action value at time step $t$ ($Q_t(a)$) is computed by summing the rewards we have received taking that action, over how many time we have taken that action. The indicator function $I(\cdot)$ = 1 if action $A_n = a$ and = 0 if  $A_n \neq a$. This basically allows us to pick out the time steps where we actually took action $a$. 
 
@@ -74,6 +74,7 @@ There are 4 bandits that the greedy algorithm can select, with values of [1, 2, 
 If the bandits pay out with a certain probability, consider the bandits above, but they pay out with probability [0.3, 0.8, 0.4, 0.2], we get a similar situation. This time the agent will pull arms randomly until it finally gets a reward. 
 
 Of course this is not the best algorithm if we want to leave the casino with the most money. But if you run the greedy agent against the random agent a few times, if we are lucky, the agent will select the highest paying bandit, meaning it will outperform the random agent, but this rarely happens. 
+
 ---
 
 ### References
