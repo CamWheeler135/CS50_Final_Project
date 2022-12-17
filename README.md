@@ -6,7 +6,7 @@
 | Term | Notation| Description |
 |------|---------|-------------|
 | Action | $A_t$ | Action taken by the agent at time step $t$. |
-| Observation | $O_t | Observation received by the agent from the environment after taking and action. |
+| Observation | $O_t$ | Observation received by the agent from the environment after taking and action. |
 | Reward | $R_t$ | Scalar feedback signal for an action. |
 | State | $S_t$ | The state of the environment or the internal state of the agent. |
 | Return | $G_t$ | Cumulative reward over time steps. |
@@ -92,7 +92,8 @@ Now that we have explored the greedy agent, we understand that an RL agent can c
 
 The policy of an $\epsilon$-greedy algorithm is such:
 
-$$ \pi_t(a) = \begin{bmatrix} (1-\epsilon) + \epsilon / |A| \space \space \text{if} \space \space Q_t(a) = \max_b Q_t(b) \\ \text{} \\ \epsilon/|A| \space \space \text{otherwise}\end{bmatrix}$$
+$$ \pi_t(a) = \begin{bmatrix} (1-\epsilon) + \epsilon / |A| \space \space \text{if} \space \space Q_t(a) = \max_b Q_t(b) \end{bmatrix}$$
+$$\pi_t(a) =  \begin{bmatrix}\epsilon/|A| \space \space \text{otherwise}\end{bmatrix}$$
 
 Where $|A|$ denotes the number of choices that the agent can select. Note that the optimal action can still be selected when we are randomly choosing actions with probability $\epsilon$.
 
