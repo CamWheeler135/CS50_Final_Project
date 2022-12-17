@@ -41,7 +41,11 @@ The agents I plan to implement are:
 
 #### The Random Agent.
 
-This agent has no concept of what is going on really, they simply just pull whatever bandit they want, regardless of reward, or how many times they have pulled it. This idea can be thought of as simply closing your eyes at the casino and pulling any of the slot machines you fancy.
+This agent has no concept of what is going on, they simply just pull whatever bandit they want, regardless of reward, or how many times they have pulled it. This idea can be thought of as simply closing your eyes at the casino and pulling any of the slot machines you fancy.
+
+#### The Greedy Agent. 
+
+Before discussing this agent, I first need to introduce a concept of evaluating our actions
 
 ---
 
