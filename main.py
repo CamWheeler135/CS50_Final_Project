@@ -8,7 +8,7 @@ from pathlib import Path
 # Local Imports
 import plotting
 from bandit_env import BanditEnv
-from bandit_algos import RandomAgent, GreedyAgent
+from bandit_algos import RandomAgent, GreedyAgent, EpsilonGreedyAgent
 
 #---- Environment Set Up ----#
 
@@ -22,12 +22,14 @@ env = BanditEnv(rewards=rewards, reward_probas=reward_probas)
 #--- Agent and Actions Set Up----#
 
 # Create the agent
-random_agent = RandomAgent(env=env, number_of_pulls=2000)
-greedy_agent = GreedyAgent(env=env, number_of_pulls=2000)
+random_agent = RandomAgent(env=env, number_of_pulls=1000)
+greedy_agent = GreedyAgent(env=env, number_of_pulls=1000)
+egreedy_agent = EpsilonGreedyAgent(env=env, number_of_pulls=1000) # Epsilon default value = 0.2
 
 # Tell the agent to perform its actions, this will return the rewards it got, the cumulative reward and the times it pulled each arm.
 ra_performance = random_agent.perform_actions()
 ga_performance = greedy_agent.perform_actions()
+ega_performance = egreedy_agent.perform_actions()
 
 
 #---- Results and Plotting ----#
@@ -35,11 +37,13 @@ ga_performance = greedy_agent.perform_actions()
 # Creates a directory to store the plots of the agents performance. 
 plotting.create_directory("Plots")
 
-
-print(f"Random Action Selection: {ra_performance['rewards']}")
-print(f"Greedy Action Selection: {ga_performance['rewards']}")
+print(f"Random Action Selection: {sum(ra_performance['rewards'])}")
+print(f"Greedy Action Selection: {sum(ga_performance['rewards'])}")
+print(f"Epsilon Greedy Action Selection: {sum(ega_performance['rewards'])}")
 
 plotting.cumulative_reward_plot(ra_performance, agent_type="Random", save_path=Path('Plots', "Random Agent Cumulative Reward"))
 plotting.cumulative_reward_plot(ga_performance, agent_type="Greedy", save_path=Path('Plots', "Greedy Agent Cumulative Reward"))
+plotting.cumulative_reward_plot(ega_performance, agent_type="e-Greedy", save_path=Path('Plots', "e-Greedy Agent Cumulative Reward"))
 plotting.actions_taken_plot(ra_performance, agent_type="Random", save_path=Path('Plots', "Random Agent Action Selection"))
 plotting.actions_taken_plot(ga_performance, agent_type="Greedy", save_path=Path('Plots', "Greedy Agent Action Selection"))
+plotting.actions_taken_plot(ega_performance, agent_type="e-Greedy", save_path=Path('Plots', "e-Greedy Agent Action Reward"))
