@@ -45,8 +45,35 @@ This agent has no concept of what is going on, they simply just pull whatever ba
 
 #### The Greedy Agent. 
 
-Before discussing this agent, I first need to introduce a concept of evaluating our actions
+Before discussing this agent, I first need to introduce a concept of **evaluating our actions**, this allows us to learn about what actions are better than others.
 
+Let us define the **Action Value**.
+
+$$ q(a) = \mathbb{E} \space [R_t \space | A_t = a \space] $$
+
+The action value $q(a)$, is the reward we expect to receive given that we take action $a$. A simple way to learn and estimate the action value is to average out the rewards we have received taking that specific action. This can be computed such that: 
+
+$$Q_t(a) = \frac{\sum^t_{n=1}I(A_n=a)R_n}{\sum^t_{n=1}I(A_n=a)}$$
+
+Our estimate of the action value at time step $t$ ($Q_t(a)$) is computed by summing the rewards we have received taking that action, over how many time we have taken that action. The indicator function $I(\cdot)$ = 1 if action $A_n = a$ and = 0 if  $A_n \neq a$. This basically allows us to pick out the time steps where we actually took action $a$. 
+
+However, storing all of the rewards and computing this will be really inefficient when are selecting actions in a larger series. Instead we can incrementally update our estimate of the action value using the equation below:
+
+$$ Q_t(A_t) = Q_{t-1}(A_t) + \alpha_t(R_t - Q_{t-1}(A_t))$$
+
+Where $\alpha_t = \frac{1}{N_t(A_t)}$ where $N_t(A_t)$ is the count of the action $A_t$.
+
+Now that we have covered the theory and maths of the action value and how we update it, lets talk about the **Greedy Agent**. 
+
+Unlike the random agent that selects its actions randomly, the greedy agent will pick the action with the highest value with a probability of 1. This means that whatever bandit has the highest action value estimate, our greedy agent will choose that every time. This of course has disadvantage of falling into suboptimal decisions. 
+
+Consider the following:
+
+There are 4 bandits that the greedy algorithm can select, with values of [1, 2, 3, 4] respectively, they all pay out with a probability of 1. All action values are initialized to 0, meaning that the agent will select an action at random (this is called breaking ties randomly). If the agent picks bandit 4 randomly, then HAPPY DAYS! We update our action value for that action, giving it a value higher than 0, and the agent will continue to select that action for the rest of the game. However, if we picked action 1, 2, or 3 we would remain stuck in a suboptimal action for the rest of the game. This is not what we want. 
+
+If the bandits pay out with a certain probability, consider the bandits above, but they pay out with probability [0.3, 0.8, 0.4, 0.2], we get a similar situation. This time the agent will pull arms randomly until it finally gets a reward. 
+
+Of course this is not the best algorithm if we want to leave the casino with the most money. But if you run the greedy agent against the random agent a few times, if we are lucky, the agent will select the highest paying bandit, meaning it will outperform the random agent, but this rarely happens. 
 ---
 
 ### References
