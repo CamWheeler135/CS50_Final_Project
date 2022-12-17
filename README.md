@@ -39,11 +39,11 @@ The agents I plan to implement are:
     4. Upper Confidence Bound (UCB) Agent.
     5. Thompson Sampling Agent. 
 
-#### The Random Agent.
+#### 2.2.1 The Random Agent.
 
 This agent has no concept of what is going on, they simply just pull whatever bandit they want, regardless of reward, or how many times they have pulled it. This idea can be thought of as simply closing your eyes at the casino and pulling any of the slot machines you fancy.
 
-#### The Greedy Agent. 
+#### 2.2.2 The Greedy Agent.
 
 Before discussing this agent, I first need to introduce a concept of **evaluating our actions**, this allows us to learn about what actions are better than others.
 
@@ -55,7 +55,7 @@ The action value $q(a)$, is the reward we expect to receive given that we take a
 
 $$Q_t(a) = \frac{\sum_{n = 1}^t I(A_n = a)R_n}{\sum_{n = 1}^t I(A_n = a)}$$
 
-Our estimate of the action value at time step $t$ ($Q_t(a)$) is computed by summing the rewards we have received taking that action, over how many time we have taken that action. The indicator function $I(\cdot)$ = 1 if action $A_n = a$ and = 0 if  $A_n \neq a$. This basically allows us to pick out the time steps where we actually took action $a$. 
+Our estimate of the action value at time step $t$ $(Q_t(a))$ is computed by summing the rewards we have received taking that action, over how many time we have taken that action. The indicator function $I(\cdot)$ = 1 if action $A_n = a$ and = 0 if  $A_n \neq a$. This basically allows us to pick out the time steps where we actually took action $a$. 
 
 However, storing all of the rewards and computing this will be really inefficient when are selecting actions in a larger series. Instead we can incrementally update our estimate of the action value using the equation below:
 
