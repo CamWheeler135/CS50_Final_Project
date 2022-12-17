@@ -1,6 +1,17 @@
 
 # Welcome to my CS50 final project. 
 
+### Definitions. 
+
+| Term | Notation| Description |
+|------|---------|-------------|
+| Action | $A_t$ | Action taken by the agent at time step $t$. |
+| Observation | $O_t | Observation received by the agent from the environment after taking and action. |
+| Reward | $R_t$ | Scalar feedback signal for an action. |
+| State | $S_t$ | The state of the environment or the internal state of the agent. |
+| Return | $G_t$ | Cumulative reward over time steps. |
+
+
 ### 1.0 Introduction.
 
 Here I will be exploring reinforcement learning (RL), a type of machine learning that aims to interact with an environment in order to improve. Unlike machine learning methods you are probably used to (do not worry if you are not) RL needs to interact with this environment in order to learn. A great example of RL comes from DeepMind where they produced an agent that learnt to play atari games to a human level and above! This project will not be tackling tasks at that level however, I will be exploring what is called "The multi-armed bandit problem". This is a much simpler version of the full RL problem and can be thought of like going to the casino and playing the slot machines. I will explain it in much more detail below. 
@@ -73,7 +84,19 @@ There are 4 bandits that the greedy algorithm can select, with values of [1, 2, 
 
 If the bandits pay out with a certain probability, consider the bandits above, but they pay out with probability [0.3, 0.8, 0.4, 0.2], we get a similar situation. This time the agent will pull arms randomly until it finally gets a reward. 
 
-Of course this is not the best algorithm if we want to leave the casino with the most money. But if you run the greedy agent against the random agent a few times, if we are lucky, the agent will select the highest paying bandit, meaning it will outperform the random agent, but this rarely happens. 
+Of course this is not the best algorithm if we want to leave the casino with the most money. But if you run the greedy agent against the random agent a few times, if we are lucky, the agent will select the highest paying bandit, meaning it will outperform the random agent, but this rarely happens.
+
+#### 2.2.3 The $\epsilon$-Greedy Agent
+
+Now that we have explored the greedy agent, we understand that an RL agent can compute an value of an action "the action value" that allows it to reason on what actions to choose. However, the greedy agent that we have explored will commit to the first bandit, thinking it is the best choice, BUT IS IT THE BEST CHOICE? Researchers have come up with an algorithm, the "$\epsilon$-greedy algorithm" that allows the agent to exploit the knowlegde it has gotten so far, but with a certain probability $(\epsilon)$ of exploring other actions. This allows the agent to continue to explore its other options, in order to ensure that the action the agent is taking is the optimal action. 
+
+The policy of an $\epsilon$-greedy algorithm is such:
+
+$$ \pi_t(a) = \begin{bmatrix} (1-\epsilon) + \epsilon / |A| \space \space \text{if} \space \space Q_t(a) = \max_b Q_t(b) \\ \text{} \\ \epsilon/|A| \space \space \text{otherwise}\end{bmatrix}$$
+
+Where $|A|$ denotes the number of choices that the agent can select. Note that the optimal action can still be selected when we are randomly choosing actions with probability $\epsilon$.
+
+This is a very popular algorithm, although in this case its very simple, it has been used to great effect. The DeepMind Atari playing agent uses an $\epsilon$-greedy policy!!!!
 
 ---
 
@@ -84,4 +107,6 @@ Of course this is not the best algorithm if we want to leave the casino with the
 - [Alejandro Aristzabal](https://medium.com/@alejandro.aristizabal24) - Has a great series on the multi-armed bandit problem, with code. 
 
 - [Edward Pie](https://www.youtube.com/watch?v=sNamSTJ4qCU) - Great explanation with some example code.
+
+- [Mattia Cinelli](https://github.com/MattiaCinelli) - Has a really detailed repo of RL examples, great to look at for multi armed bandits and beyond. 
 
