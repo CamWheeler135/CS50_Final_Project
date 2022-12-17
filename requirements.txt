@@ -1,5 +1,8 @@
 # All required dependencies for this python project go here.
 
+# Gym environment
+gym
+
 # Data and Maths
 numpy
 pandas
