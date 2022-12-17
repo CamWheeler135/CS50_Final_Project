@@ -19,7 +19,7 @@ class BanditEnv(gym.Env):
     def __init__(self, rewards, reward_probas):
         self.num_of_bandits = len(rewards)
         self.action_space = Discrete(self.num_of_bandits)
-        # We do not change between states in a bandit problem
+        # We do not change between states in a bandit problem, so we just have 1 state.
         self.observation_space = Discrete(1)
         self.rewards = rewards
         self.reward_probas = reward_probas
