@@ -85,7 +85,7 @@ Now that we have covered the theory and maths of the action value and how we upd
 
 Unlike the random agent that selects its actions randomly, the greedy agent will pick the action that has the highest estimate. Its policy is defined as:
 
-$$ \pi_t(a) = I(A_t = \underset{x}{\arg\max} Q_t(a)) $$
+$$ \pi_t(a) = I(A_t = \underset{a}{\arg\max} Q_t(a)) $$
 
 This means that the greedy agent will pick action $A_t$ with the highest action estimate $Q_t(a)$. Where $I(\cdot)$ is the indicator function that = 1 if the action is the highest action value and = 0 if not. 
 
@@ -119,7 +119,7 @@ The UCB agent, is the first agent I am implementing that shows "optimism is the 
 
  Lets look at how the UCB takes actions. 
 
-$$ a_t = \argmax_{a \in A}Q_t(a) + U_t(a) $$
+$$ a_t = \underset{a \in A}{\arg\max} Q_t(a) + U_t(a) $$
 
 Meaning that action $a_t$ is chosen such that it maximizes the action value estimate + $U_t(a)$. 
 
@@ -165,7 +165,7 @@ There are other values for $p$ but we are going to use this one.
 Furthermore, we can remove the 2 from the denominator and start to treat it as a hyper-parameter $c$, for example.
 
 $$
-a_t = \argmax_{a \in A} Q_t(a) + c \sqrt{\frac{log \space t}{N_t(a)}}
+a_t = \underset{a \in A}{\arg\max} Q_t(a) + c \sqrt{\frac{log \space t}{N_t(a)}}
 $$
 
 If c is larger, we will explore more, if c is smaller we will explore less. In the code (see update_confidence function in the UCBAgent) I have set this as default to 2, feel free to explore different values for $c$ and see how it affects the performance. 
