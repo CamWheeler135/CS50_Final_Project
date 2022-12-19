@@ -84,7 +84,7 @@ class GreedyAgent():
             self.update_Q(selected_action=selected_action, reward=reward, action_count=self.pulled_arm_counter)
 
 
-        return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter}
+        return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter, "q_values": self.Q_values}
 
 
 
@@ -121,7 +121,7 @@ class EpsilonGreedyAgent():
             selected_action = np.random.choice(self.env.num_of_bandits)
             return selected_action
 
-    def update_Q(self, selected_action, reward, action_count):
+    def update_Q(self, selected_action, reward, action_count: np.array):
         ''' Updates the Q value for the action by averaging the immediate rewards
             over the times that action has been selected. '''
 
@@ -146,7 +146,7 @@ class EpsilonGreedyAgent():
             self.update_Q(selected_action=selected_action, reward=reward, action_count=self.pulled_arm_counter)
 
 
-        return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter}
+        return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter, "q_values": self.Q_values}
 
 
 
@@ -155,7 +155,7 @@ class EpsilonGreedyAgent():
 class UCBAgent():
     ''' Agent uses the upper confidence bounds to compute what actions to select. This agent uses the UCB1 algorithm. '''
 
-    def __init__(self, env, number_of_pulls) -> None:
+    def __init__(self, env, number_of_pulls, c=2):
         self.env = env
         self.number_of_pulls = number_of_pulls
 
@@ -163,19 +163,21 @@ class UCBAgent():
         self.rewards = []
         self.cumulative_reward = []
         self.pulled_arm_counter = np.zeros(self.env.num_of_bandits)
+
         # Values used in the UCB computation.
         self.Q_values = np.zeros(self.env.num_of_bandits)
         self.Ut_values = np.zeros(self.env.num_of_bandits)
         self.UCB = np.zeros(self.env.num_of_bandits)
+        self.c = c
         self.time_steps = 0
-        # Ensures all actions are selected once before using UCB.
-        self.first_action_counter = 0 
 
-    def update_confidence(self, selected_action, action_count, time_steps):
+    def update_confidence(self, action_count, time_steps):
         ''' Computes and updates the confidence bound for each bandit. '''
 
-        updated_confidence = np.sqrt((2 * np.log(time_steps)/ action_count[selected_action]))
-        self.Ut_values[selected_action] = updated_confidence
+        # Loops through each of the confidence bounds and updated them accordingly. 
+        for i in range(np.size(self.Ut_values)):
+            updated_confidence = self.c * np.sqrt((np.log(time_steps) / action_count[i]))
+            self.Ut_values[i] = updated_confidence
 
     def update_Q(self, selected_action, reward, action_count):
         ''' Updates the Q value for the action by averaging the immediate rewards
@@ -184,35 +186,39 @@ class UCBAgent():
         updated_value = self.Q_values[selected_action] + 1 / action_count[selected_action] * (reward - self.Q_values[selected_action])
         self.Q_values[selected_action] = updated_value
 
-    def select_action(self, first_action_counter):
+    def select_action(self, q_values: np.array, ut_values: np.array, ucb: np.array):
         ''' Selections actions by choosing the value that maximizes Qt + Ut. '''
 
         # Choose each action once, then start using the UCB algorithm.
-        while first_action_counter < self.env.num_of_bandits:
-            return first_action_counter
+        while self.time_steps < self.env.num_of_bandits:
+            return self.time_steps 
 
         # Compute the action for selection.
         for bandit in range(self.env.num_of_bandits):
-            self.UCB[bandit] = self.Q_values[bandit] + self.Ut_values[bandit]
-        selected_action = np.argmax(self.UCB)
+            ucb[bandit] = q_values[bandit] + ut_values[bandit]
+        selected_action = np.argmax(ucb)
         return selected_action
 
     def perform_actions(self):
-        ''' For each time step the agent will select an action one time
+        ''' Agent will select an action one time
             before changing to the UCB algorithm. '''
 
         for i in range(self.number_of_pulls):
 
-            selected_action = self.select_action(first_action_counter=self.first_action_counter)
+            selected_action = self.select_action(q_values=self.Q_values, ut_values=self.Ut_values, ucb=self.UCB)
             reward, _, _, _ = self.env.step(selected_action)
             self.rewards.append(reward)
             self.cumulative_reward.append(sum(self.rewards) / len(self.rewards))
             self.pulled_arm_counter[selected_action] += 1
 
-            # Update Q and Ut values
-            self.time_steps += 1
-            self.first_action_counter += 1
-            self.update_confidence(selected_action=selected_action, action_count=self.pulled_arm_counter, time_steps=self.time_steps)
-            self.update_Q(selected_action=selected_action, reward=reward, action_count=self.pulled_arm_counter)
+            # Check that all actions have been pulled at least once before using UCB.
+            if self.time_steps < self.env.num_of_bandits:
+                self.update_Q(selected_action=selected_action, reward=reward, action_count=self.pulled_arm_counter)
+                self.time_steps += 1
+            else:
+                # Update Q and Ut values
+                self.update_Q(selected_action=selected_action, reward=reward, action_count=self.pulled_arm_counter)
+                self.update_confidence(action_count=self.pulled_arm_counter, time_steps=self.time_steps)
+                self.time_steps +=1
         
-        return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter}
+        return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter, "q_values": self.Q_values, "confidence": self.Ut_values}
