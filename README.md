@@ -85,7 +85,7 @@ Now that we have covered the theory and maths of the action value and how we upd
 
 Unlike the random agent that selects its actions randomly, the greedy agent will pick the action that has the highest estimate. Its policy is defined as:
 
-$$ \pi_t(a) = I(A_t = \argmax_aQ_t(a)) $$
+$$ \pi_t(a) = I(A_t = \argmax_a Q_t(a)) $$
 
 This means that the greedy agent will pick action $A_t$ with the highest action estimate $Q_t(a)$. Where $I(\cdot)$ is the indicator function that = 1 if the action is the highest action value and = 0 if not. 
 
@@ -105,7 +105,9 @@ Now that we have explored the greedy agent, we understand that an RL agent can c
 
 The policy of an $\epsilon$-greedy algorithm is such:
 
-$$ \pi_t(a) = \begin{bmatrix} (1-\epsilon) + \epsilon / |A| \space \space \text{if} \space \space Q_t(a) = \max_b Q_t(b) \\ \epsilon/|A| \space \space \text{otherwise} \end{bmatrix}$$
+$$ \pi_t(a) = \begin{bmatrix} (1-\epsilon) + \epsilon / |A| \space \space \text{if} \space \space Q_t(a) = \max_b Q_t(b) 
+
+\\ \epsilon/|A| \space \space \text{otherwise} \end{bmatrix}$$
 
 Where $|A|$ denotes the number of choices that the agent can select. Note that the optimal action can still be selected when we are randomly choosing actions with probability $\epsilon$.
 
@@ -117,7 +119,7 @@ The UCB agent, is the first agent I am implementing that shows "optimism is the 
 
  Lets look at how the UCB takes actions. 
 
-$$ a_t = \argmax_{a \in A}Q_t(a) + U_t(a) $$
+$$ a_t = \operatorname{\argmax}_{a \in A}Q_t(a) + U_t(a) $$
 
 Meaning that action $a_t$ is chosen such that it maximizes the action value estimate + $U_t(a)$. 
 
@@ -156,17 +158,17 @@ $$ U_t(a) = \sqrt{\frac{-log \space p}{2N_t(a)}} $$
 
 Now lets set $p$ to be a small value, and allow it to decrease over time, for example $p=1/t$ which when plugged into the bound, we get:
 
-$U_t(a) = \sqrt{\frac{log \space t}{2N_t(a)}}$
+$$U_t(a) = \sqrt{\frac{log \space t}{2N_t(a)}}$$
 
 There are other values for $p$ but we are going to use this one. 
 
 Furthermore, we can remove the 2 from the denominator and start to treat it as a hyper-parameter $c$, for example.
 
 $$
-a_t = \argmax_{a \in A} Q_t(a) + c \sqrt{\frac{log \space t}{N_t(a)}}
+a_t = \operatorname{\argmax}_{a \in A} Q_t(a) + c \sqrt{\frac{log \space t}{N_t(a)}}
 $$
 
-If c is larger, we will explore more, if c is smaller we will explore less. The code 
+If c is larger, we will explore more, if c is smaller we will explore less. In the code (see update_confidence function in the UCBAgent) I have set this as default to 2, feel free to explore different values for $c$ and see how it affects the performance. 
 
 
 
