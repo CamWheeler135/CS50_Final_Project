@@ -1,6 +1,8 @@
 
 # Welcome to my CS50 final project. 
 
+\DeclareMathOperator*{\argmax}{arg\,max}
+
 ### Definitions. 
 
 | Term | Notation| Description |
