@@ -105,9 +105,9 @@ Now that we have explored the greedy agent, we understand that an RL agent can c
 
 The policy of an $\epsilon$-greedy algorithm is such:
 
-$$ \pi_t(a) = \begin{bmatrix} (1-\epsilon) + \epsilon / |A| \space \space \text{if} \space \space Q_t(a) = \max_b Q_t(b) 
+$$ \pi_t(a) = \begin{bmatrix} (1-\epsilon) + \epsilon / |A| \space \space \text{if} \space \space Q_t(a) = \max_b Q_t(b) $$
 
-\\ \epsilon/|A| \space \space \text{otherwise} \end{bmatrix}$$
+$$\epsilon/|A| \space \space \text{otherwise} \end{bmatrix}$$
 
 Where $|A|$ denotes the number of choices that the agent can select. Note that the optimal action can still be selected when we are randomly choosing actions with probability $\epsilon$.
 
@@ -148,11 +148,11 @@ The true mean $\mu$ is the true action value $q(a)$.
 
 $$ p(Q_t(a) + U_t(a) \le q(a) ) \le e^{-2N_t(a) U_t(a)^2} $$
 
-We want to pick the bound $e^{-2N_t(a) U_t(a)^2}$ to be small, such that the probability that our true mean exceeding the upper bound is small. Lets pick a small probability $p$.
+We want to pick the bound $e^{-2N_t(a) U_t(a)^2}$ to be small, such that the probability that the true mean being more than the bound $U_t$ away from our estimate mean is probability $p$. Lets pick a small probability $p$.
 
-$$ p(Q_t(a) + U_t(a) \le q(a) ) \le e^{-2N_t(a) U_t(a)^2}  = p $$
+$$ e^{-2N_t(a) U_t(a)^2}  = p $$
 
-We then solve for $U_t(a)$ which allows us to determine how to compute our confidence in the following way:
+We then solve for $U_t(a)$ which allows us to determine how to compute our confidence:
 
 $$ U_t(a) = \sqrt{\frac{-log \space p}{2N_t(a)}} $$
 
