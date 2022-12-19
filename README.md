@@ -1,8 +1,6 @@
 
 # Welcome to my CS50 final project. 
 
-\DeclareMathOperator*{\argmax}{arg\,max}
-
 ### Definitions. 
 
 | Term | Notation| Description |
@@ -25,7 +23,7 @@ Here I will be exploring reinforcement learning (RL), a type of machine learning
 - bandit_algos.py - The code for each of the multi-armed bandit algorithms.
 - plotting.py - Code for all the plots you can make. 
 
-Once this project is complete, feel free to clone the repo and have a play around with the code, I will also include my references with links to their blogs/code at the bottom of the file. Jump straight there to see my inspiration. 
+Once this project is complete, feel free to clone the repo and have a play around with the code, I will also include my references with links to their blogs/code at the bottom of this file.
 
 ---
 
@@ -87,7 +85,7 @@ Now that we have covered the theory and maths of the action value and how we upd
 
 Unlike the random agent that selects its actions randomly, the greedy agent will pick the action that has the highest estimate. Its policy is defined as:
 
-$$ \pi_t(a) = I(A_t = \argmax_{a} Q_t(a)) $$
+$$ \pi_t(a) = I(A_t = \underset{x}{\arg\max} Q_t(a)) $$
 
 This means that the greedy agent will pick action $A_t$ with the highest action estimate $Q_t(a)$. Where $I(\cdot)$ is the indicator function that = 1 if the action is the highest action value and = 0 if not. 
 
