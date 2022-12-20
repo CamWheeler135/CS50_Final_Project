@@ -19,7 +19,8 @@ def cumulative_reward_plot(performance: dict, agent_type: str):
     ax.set_ylabel("Cumulative Reward")
     ax.set_xlabel("Time Steps")
     ax.set_title(f"{agent_type} Performance")
-    plt.savefig(Path("Plots/" + agent_type + 'cumulative_reward'))
+    create_directory(Path("Plots/" + agent_type + "/"))
+    plt.savefig(Path("Plots/" + agent_type + "/" + 'cumulative_reward'))
 
 
 def actions_taken_plot(performance: dict, agent_type: str):
@@ -34,10 +35,43 @@ def actions_taken_plot(performance: dict, agent_type: str):
     ax.set_ylabel("Times Chosen")
     ax.set_xlabel("Bandit Choice")
     ax.set_title(f"{agent_type} Action Selection")
-    plt.savefig(Path("Plots/" + agent_type + 'arm_choice'))
+    plt.savefig(Path("Plots/" + agent_type + "/" +'arm_choice'))
+
+def act_val_estimate_plot(performance: dict, agent_type: str):
+    ''' Plots the action value estimate Q(a) for algorithms that compute it. '''
+    x = [i for i in range(len(performance["q_values"]))]
+    y = performance["q_values"]
+
+    fig, ax = plt.subplots()
+    ax.bar(x, y, width=0.5)
+    ax.xaxis.get_major_locator().set_params(integer=True)
+    ax.set_ylabel("Action Value Estimate")
+    ax.set_xlabel("Bandit")
+    ax.set_title(f"{agent_type} Estimated Q(a) Value")
+    plt.savefig(Path("Plots/" + agent_type + "/" + 'action_value_estimate'))
+
+
+def total_regret_plot(performance: dict, agent_type: str):
+    ''' Plots the regret of each algorithm. '''
+    
+    fig, ax = plt.subplots()
+    ax.plot(performance['regret'])
+    ax.set_title("Regret")
+    ax.set_xlabel("Time Steps")
+    ax.set_ylabel("Total Regret")
+    plt.savefig(Path("Plots/" + agent_type + "/" + "total_regret"))
+
 
 
 def plot_all(performance: dict, agent_type: str):
     ''' Calls all of the plotting functions. '''
-    cumulative_reward_plot(performance=performance, agent_type=agent_type)
-    actions_taken_plot(performance=performance, agent_type=agent_type)
+
+    if agent_type == 'Random_Agent':
+        cumulative_reward_plot(performance=performance, agent_type=agent_type)
+        actions_taken_plot(performance=performance, agent_type=agent_type)
+        total_regret_plot(performance=performance, agent_type=agent_type)
+    else:
+        cumulative_reward_plot(performance=performance, agent_type=agent_type)
+        actions_taken_plot(performance=performance, agent_type=agent_type)
+        act_val_estimate_plot(performance=performance, agent_type=agent_type)
+        total_regret_plot(performance=performance, agent_type=agent_type)
