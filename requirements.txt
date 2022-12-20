@@ -11,6 +11,7 @@ scipy
 # Visualisation
 matplotlib
 seaborn
+tqdm
 
 # Format and Code Checks
 black
