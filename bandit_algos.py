@@ -2,6 +2,7 @@
 
 # Imports
 import numpy as np
+from tqdm import tqdm
 
 
 class RandomAgent():
@@ -16,19 +17,27 @@ class RandomAgent():
         # Internal states of the agent
         self.rewards = []
         self.cumulative_reward = []
+        self.regret = []
+        self.cumulative_regret = []
         self.pulled_arm_counter = np.zeros(self.env.num_of_bandits)
 
     def perform_actions(self):
         ''' For each time step, the agent will select and action. '''
 
-        for i in range(self.number_of_pulls):
+        max_reward = self.env.rewards[np.argmax(self.env.rewards)]
+
+        for i in tqdm(range(self.number_of_pulls)):
+            # Select an action, receive a reward, compute cumulative reward and regret and increment arm counter
             selected_action = np.random.choice(self.env.num_of_bandits)
             reward, _, _, _ = self.env.step(selected_action)
             self.rewards.append(reward)
             self.cumulative_reward.append(sum(self.rewards) / len(self.rewards))
+            action_regret = max_reward - reward
+            self.regret.append(action_regret)
+            self.cumulative_regret.append(sum(self.regret))
             self.pulled_arm_counter[selected_action] += 1
         
-        return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter}
+        return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter, "regret": self.cumulative_regret}
 
 
 
@@ -45,6 +54,8 @@ class GreedyAgent():
         # Internal states of the agent, note that we also have to add the notion of an "action value" (q_value)
         self.rewards = []
         self.cumulative_reward = []
+        self.regret = []
+        self.cumulative_regret = []
         self.pulled_arm_counter = np.zeros(self.env.num_of_bandits)
         self.Q_values = np.zeros(self.env.num_of_bandits)
 
@@ -71,20 +82,26 @@ class GreedyAgent():
         ''' For each time step the agent will select an action according
             according to the highest action value (q_value) '''
 
-        for i in range(self.number_of_pulls):
+        max_reward = self.env.rewards[np.argmax(self.env.rewards)]
 
-            # We need to tell the agent how to make decisions if action values are equal.
+        for i in tqdm(range(self.number_of_pulls)):
+
+            # Select an action greedily, get a reward, compute cumulative reward and regret and increment arm counter and update Q. 
             selected_action = self.select_greedy_action(q_values=self.Q_values)
             reward, _, _, _ = self.env.step(selected_action)
             self.rewards.append(reward)
             self.cumulative_reward.append(sum(self.rewards) / len(self.rewards))
+            action_regret = max_reward - reward
+            self.regret.append(action_regret)
+            self.cumulative_regret.append(sum(self.regret))
             self.pulled_arm_counter[selected_action] += 1
 
             # Update the Q value of that action.
             self.update_Q(selected_action=selected_action, reward=reward, action_count=self.pulled_arm_counter)
 
 
-        return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter, "q_values": self.Q_values}
+        return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter, 
+                "q_values": self.Q_values, "regret": self.cumulative_regret}
 
 
 
@@ -100,6 +117,8 @@ class EpsilonGreedyAgent():
         # States internal to the agent.
         self.rewards = []
         self.cumulative_reward = []
+        self.regret = []
+        self.cumulative_regret = []
         self.pulled_arm_counter = np.zeros(self.env.num_of_bandits)
         self.Q_values = np.zeros(self.env.num_of_bandits)
         self.epsilon = epsilon
@@ -133,20 +152,26 @@ class EpsilonGreedyAgent():
             according to the highest action value (q_value) but select a random
             action according to probability epsilon '''
 
-        for i in range(self.number_of_pulls):
+        max_reward = self.env.rewards[np.argmax(self.env.rewards)]
 
-            # We need to tell the agent how to make decisions if action values are equal.
+        for i in tqdm(range(self.number_of_pulls)):
+
+            # Select an action, receive reward, compute cumulative reward and regret, increment arm counter and update Q.
             selected_action = self.select_action(q_values=self.Q_values, epsilon=self.epsilon)
             reward, _, _, _ = self.env.step(selected_action)
             self.rewards.append(reward)
             self.cumulative_reward.append(sum(self.rewards) / len(self.rewards))
+            action_regret = max_reward - reward
+            self.regret.append(action_regret)
+            self.cumulative_regret.append(sum(self.regret))
             self.pulled_arm_counter[selected_action] += 1
 
             # Update the Q value of that action.
             self.update_Q(selected_action=selected_action, reward=reward, action_count=self.pulled_arm_counter)
 
 
-        return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter, "q_values": self.Q_values}
+        return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter,
+                "q_values": self.Q_values, "regret": self.cumulative_regret}
 
 
 
@@ -162,6 +187,8 @@ class UCBAgent():
         # States internal of the agent. 
         self.rewards = []
         self.cumulative_reward = []
+        self.regret = []
+        self.cumulative_regret = []
         self.pulled_arm_counter = np.zeros(self.env.num_of_bandits)
 
         # Values used in the UCB computation.
@@ -176,7 +203,7 @@ class UCBAgent():
 
         # Loops through each of the confidence bounds and updated them accordingly. 
         for i in range(np.size(self.Ut_values)):
-            updated_confidence = self.c * np.sqrt((np.log(time_steps) / action_count[i]))
+            updated_confidence = self.c * np.sqrt(np.log(time_steps) / action_count[i])
             self.Ut_values[i] = updated_confidence
 
     def update_Q(self, selected_action, reward, action_count):
@@ -202,13 +229,18 @@ class UCBAgent():
     def perform_actions(self):
         ''' Agent will select an action one time
             before changing to the UCB algorithm. '''
+        
+        max_reward = self.env.rewards[np.argmax(self.env.rewards)]
 
-        for i in range(self.number_of_pulls):
+        for i in tqdm(range(self.number_of_pulls)):
 
             selected_action = self.select_action(q_values=self.Q_values, ut_values=self.Ut_values, ucb=self.UCB)
             reward, _, _, _ = self.env.step(selected_action)
             self.rewards.append(reward)
             self.cumulative_reward.append(sum(self.rewards) / len(self.rewards))
+            action_regret = max_reward - reward
+            self.regret.append(action_regret)
+            self.cumulative_regret.append(sum(self.regret))
             self.pulled_arm_counter[selected_action] += 1
 
             # Check that all actions have been pulled at least once before using UCB.
@@ -221,4 +253,5 @@ class UCBAgent():
                 self.update_confidence(action_count=self.pulled_arm_counter, time_steps=self.time_steps)
                 self.time_steps +=1
         
-        return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter, "q_values": self.Q_values, "confidence": self.Ut_values}
+        return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter, 
+                "q_values": self.Q_values, "confidence": self.Ut_values, "regret": self.cumulative_regret}
