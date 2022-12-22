@@ -2,19 +2,20 @@
 
 # Standard Imports
 import numpy as np
-import matplotlib.pyplot as plt
 from pathlib import Path
 
 # Local Imports
 import plotting
 from bandit_env import BanditEnv
-from bandit_algos import RandomAgent, GreedyAgent, EpsilonGreedyAgent, UCBAgent
+from bandit_algos import RandomAgent, GreedyAgent, EpsilonGreedyAgent, UCBAgent, ThompsonSamplingAgent
+
+print("Running Main")
 
 #---- Environment Set Up ----#
 
 # Set the rewards and return probabilites for each bandit
-rewards = np.array([100, 50, 2, 25, 40, 70, 10])
-reward_probas = np.array([0.05, 0.6, 0.8, 0.45, 0.30, 0.45, 0.7])
+rewards = np.array([1, 1, 1, 1, 1, 1, 1])
+reward_probas = np.array([0.6, 0.3, 0.5, 0.7, 0.2, 0.8, 0.3])
 
 # Create the environment
 env = BanditEnv(rewards=rewards, reward_probas=reward_probas)
@@ -24,28 +25,32 @@ env = BanditEnv(rewards=rewards, reward_probas=reward_probas)
 # Create the agent
 random_agent = RandomAgent(env=env, number_of_pulls=50000)
 greedy_agent = GreedyAgent(env=env, number_of_pulls=50000)
-egreedy_agent = EpsilonGreedyAgent(env=env, number_of_pulls=50000) # Epsilon default value = 0.2
-ucb_agent = UCBAgent(env=env, number_of_pulls=50000)
+egreedy_agent = EpsilonGreedyAgent(env=env, number_of_pulls=50000) # Epsilon default value = 0.2.
+ucb_agent = UCBAgent(env=env, number_of_pulls=50000) # Default c hyperparameter = 2.
+ts_agent = ThompsonSamplingAgent(env=env, number_of_pulls=50000)
 
 # Tell the agent to perform its actions, this will return the rewards it got, the cumulative reward and the times it pulled each arm.
 ra_performance = random_agent.perform_actions()
 ga_performance = greedy_agent.perform_actions()
 ega_performance = egreedy_agent.perform_actions()
 ucb_performance = ucb_agent.perform_actions()
+ts_performance = ts_agent.perform_actions()
 
 
 #---- Results and Plotting ----#
 
-# Creates a directory to store the plots of the agents performance. 
-plotting.create_directory("Plots")
+# Creates a directory to store the plots of the agents performance.
 
-print(f"Random Action Selection: {sum(ra_performance['rewards'])}")
-print(f"Greedy Action Selection: {sum(ga_performance['rewards'])}")
-print(f"Epsilon Greedy Action Selection: {sum(ega_performance['rewards'])}")
-print(f"UCB Action Selection: {sum(ucb_performance['rewards'])}")
-
+print(f"Random Total Reward: {sum(ra_performance['rewards'])}")
+print(f"Greedy Total Reward: {sum(ga_performance['rewards'])}")
+print(f"Epsilon Greedy Total Reward: {sum(ega_performance['rewards'])}")
+print(f"UCB Total Reward: {sum(ucb_performance['rewards'])}")
+print(f"Thompson Sampling Total Reward: {sum(ts_performance['rewards'])}")
 
 plotting.plot_all(ra_performance, agent_type="Random_Agent")
 plotting.plot_all(performance=ga_performance, agent_type="Greedy_Agent")
 plotting.plot_all(performance=ega_performance, agent_type="Epsilon_Greedy_Agent")
 plotting.plot_all(performance=ucb_performance, agent_type="UCB_Agent")
+plotting.plot_all(performance=ts_performance, agent_type="Thompson_Sampling_Agent")
+
+
