@@ -51,11 +51,11 @@ To create the environment, I will be using [OpenAI's Gym](https://www.gymlibrary
 There are plenty of algorithms that have been created to solve bandit problems (Do not worry if you do not know how they work, I will  to explain how each of them works). In this implementation of the problem, our agent will take in the environment as a parameter and conduct its actions. The actions the agent takes and rewards of its actions will be stored and our agent should present these results to a few plotting functions that will create some nice graphs for us.
 
 The agents I plan to implement are:
-    - Random Agent.
-    - Greedy Agent.
-    - $\epsilon$-greedy Agent.
-    - Upper Confidence Bound (UCB) Agent.
-    - Thompson Sampling Agent. 
+- Random Agent.
+- Greedy Agent.
+- $\epsilon$-greedy Agent.
+- Upper Confidence Bound (UCB) Agent.
+- Thompson Sampling Agent. 
 
 #### 2.2.1 The Random Agent.
 
