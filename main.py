@@ -9,7 +9,7 @@ import plotting
 from bandit_env import BanditEnv
 from bandit_algos import RandomAgent, GreedyAgent, EpsilonGreedyAgent, UCBAgent, ThompsonSamplingAgent
 
-print("Running Main")
+print("\nRunning Main.\n")
 
 #---- Environment Set Up ----#
 
@@ -20,7 +20,7 @@ reward_probas = np.array([0.6, 0.3, 0.5, 0.7, 0.2, 0.8, 0.3])
 # Create the environment
 env = BanditEnv(rewards=rewards, reward_probas=reward_probas)
 
-#--- Agent and Actions Set Up----#
+#---- Agent and Actions Set Up ----#
 
 # Create the agent
 random_agent = RandomAgent(env=env, number_of_pulls=50000)
@@ -29,7 +29,7 @@ egreedy_agent = EpsilonGreedyAgent(env=env, number_of_pulls=50000) # Epsilon def
 ucb_agent = UCBAgent(env=env, number_of_pulls=50000) # Default c hyperparameter = 2.
 ts_agent = ThompsonSamplingAgent(env=env, number_of_pulls=50000)
 
-# Tell the agent to perform its actions, this will return the rewards it got, the cumulative reward and the times it pulled each arm.
+# Tell the agent to perform its actions, this returns a dictionary of metrics.
 ra_performance = random_agent.perform_actions()
 ga_performance = greedy_agent.perform_actions()
 ega_performance = egreedy_agent.perform_actions()
@@ -41,16 +41,19 @@ ts_performance = ts_agent.perform_actions()
 
 # Creates a directory to store the plots of the agents performance.
 
+print("\nFinished Running, Loading Metrics and Plots.\n")
+
 print(f"Random Total Reward: {sum(ra_performance['rewards'])}")
 print(f"Greedy Total Reward: {sum(ga_performance['rewards'])}")
 print(f"Epsilon Greedy Total Reward: {sum(ega_performance['rewards'])}")
 print(f"UCB Total Reward: {sum(ucb_performance['rewards'])}")
 print(f"Thompson Sampling Total Reward: {sum(ts_performance['rewards'])}")
 
-plotting.plot_all(ra_performance, agent_type="Random_Agent")
-plotting.plot_all(performance=ga_performance, agent_type="Greedy_Agent")
-plotting.plot_all(performance=ega_performance, agent_type="Epsilon_Greedy_Agent")
-plotting.plot_all(performance=ucb_performance, agent_type="UCB_Agent")
-plotting.plot_all(performance=ts_performance, agent_type="Thompson_Sampling_Agent")
+# Plotting all of the metrics from each agent separately.
+plotting.plot_all_single(ra_performance, agent_type="Random_Agent")
+plotting.plot_all_single(performance=ga_performance, agent_type="Greedy_Agent")
+plotting.plot_all_single(performance=ega_performance, agent_type="Epsilon_Greedy_Agent")
+plotting.plot_all_single(performance=ucb_performance, agent_type="UCB_Agent")
+plotting.plot_all_single(performance=ts_performance, agent_type="Thompson_Sampling_Agent")
 
 
