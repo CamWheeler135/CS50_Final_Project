@@ -62,6 +62,26 @@ def total_regret_plot(performance: dict, agent_type: str):
     plt.savefig(Path("Plots/" + agent_type + "/" + "total_regret"))
 
 
+def posterior_dists_plot(performance: dict, agent_type="Thompson Sampling"):
+    ''' Plots the posterior beta distributions of each distribution for each bandit. '''
+    
+    fig, ax = plt.subplots()
+
+    number_of_bandits = len(performance['arm_counter'])
+
+    for beta_dists in range(number_of_bandits):
+        alpha = int(performance['posterior_dists'][0, beta_dists])
+        beta = int(performance['posterior_dists'][1, beta_dists])
+        samples = [np.random.beta(a=alpha, b=beta) for i in range(10000)]
+        sns.kdeplot(samples, fill=True)
+    
+    ax.legend(["Bandit %s" %(beta_dists) for beta_dists in range(number_of_bandits)], loc="upper left")
+    ax.set_xlabel("Mean Reward")
+
+
+    plt.savefig(Path("Plots/" + agent_type + "/" + "Posterior_distributions"))
+
+
 
 def plot_all(performance: dict, agent_type: str):
     ''' Calls all of the plotting functions. '''
@@ -70,6 +90,13 @@ def plot_all(performance: dict, agent_type: str):
         cumulative_reward_plot(performance=performance, agent_type=agent_type)
         actions_taken_plot(performance=performance, agent_type=agent_type)
         total_regret_plot(performance=performance, agent_type=agent_type)
+
+    elif agent_type == 'Thompson_Sampling_Agent':
+        cumulative_reward_plot(performance=performance, agent_type=agent_type)
+        actions_taken_plot(performance=performance, agent_type=agent_type)
+        total_regret_plot(performance=performance, agent_type=agent_type)
+        posterior_dists_plot(performance=performance, agent_type=agent_type)
+
     else:
         cumulative_reward_plot(performance=performance, agent_type=agent_type)
         actions_taken_plot(performance=performance, agent_type=agent_type)
