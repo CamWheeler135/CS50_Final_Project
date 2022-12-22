@@ -40,9 +40,6 @@ class RandomAgent():
         return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter, "regret": self.cumulative_regret}
 
 
-
-
-
 class GreedyAgent():
     ''' An agent that selects the action with the highest
         action value 100% of the time. '''
@@ -102,9 +99,6 @@ class GreedyAgent():
 
         return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter, 
                 "q_values": self.Q_values, "regret": self.cumulative_regret}
-
-
-
 
 
 class EpsilonGreedyAgent():
@@ -172,9 +166,6 @@ class EpsilonGreedyAgent():
 
         return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter,
                 "q_values": self.Q_values, "regret": self.cumulative_regret}
-
-
-
 
 
 class UCBAgent():
@@ -255,3 +246,70 @@ class UCBAgent():
         
         return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter, 
                 "q_values": self.Q_values, "confidence": self.Ut_values, "regret": self.cumulative_regret}
+
+
+class ThompsonSamplingAgent():
+    '''' Agent that performs Thompson Sampling. '''
+
+    def __init__(self, env, number_of_pulls):
+        self.env = env
+        self.number_of_pulls = number_of_pulls
+
+        # States internal of the agent. 
+        self.rewards = []
+        self.cumulative_reward = []
+        self.regret = []
+        self.cumulative_regret = []
+        self.pulled_arm_counter = np.zeros(self.env.num_of_bandits)
+
+        # Values needed for Thompson Sampling
+        # Prior distributions, assuming uniform distribution between 0 and 1 (we know very little).
+        self.prior_dists = np.asarray([np.random.uniform(low=0, high=1) for i in range(self.env.num_of_bandits)])
+        # Posterior beta distribution, first array = a, second array = b.
+        self.posterior_dists = np.ones([2, self.env.num_of_bandits])
+        self.action_counter = 0
+
+    def select_action(self, prior_dists, posterior_dists, action_counter):
+        ''' Selects and action according to the Thompson Sampling Algorithm. '''
+        
+        if action_counter == 0:
+            return np.argmax(prior_dists)
+        else:
+            # Samples the beta distribution with the a and b values contained in the posterior distribution array.
+            posterior_samples = np.asarray([np.random.beta(a=posterior_dists[0, i], b=posterior_dists[1, i]) for i in range(self.env.num_of_bandits)])
+            return np.argmax(posterior_samples)
+
+    def update_posterior(self, selected_action, reward, posterior_dists):
+        ''' Updated the posterior beta distribution according to the reward we received from taking that action. '''
+
+        # If the reward equals 1 we increment a, if the reward equals 0 we increment b (these are parameters of the beta distribution).
+        if reward == 1:
+            posterior_dists[0, selected_action] += 1
+        else:
+            posterior_dists[1, selected_action] += 1
+    
+    
+    def perform_actions(self):
+        ''' For each time step the agent will select and action computed through thompson sampling 
+            and perform that action. '''
+        
+        max_reward = self.env.rewards[np.argmax(self.env.rewards)]
+
+        for i in tqdm(range(self.number_of_pulls)):
+            selected_action = self.select_action(prior_dists=self.prior_dists, posterior_dists=self.posterior_dists, action_counter=self.action_counter)
+            reward, _, _, _ = self.env.step(selected_action)
+
+            # Compute metrics.
+            self.rewards.append(reward)
+            self.cumulative_reward.append(sum(self.rewards) / len(self.rewards))
+            action_regret = max_reward - reward
+            self.regret.append(action_regret)
+            self.cumulative_regret.append(sum(self.regret))
+            self.pulled_arm_counter[selected_action] += 1
+            self.action_counter += 1
+
+            # Update posterior.
+            self.update_posterior(selected_action=selected_action, reward=reward, posterior_dists=self.posterior_dists)
+        
+        return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter, 
+                "posterior_dists": self.posterior_dists, "regret": self.cumulative_regret}
