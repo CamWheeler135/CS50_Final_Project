@@ -23,11 +23,11 @@ env = BanditEnv(rewards=rewards, reward_probas=reward_probas)
 #---- Agent and Actions Set Up ----#
 
 # Create the agent
-random_agent = RandomAgent(env=env, number_of_pulls=1000)
-greedy_agent = GreedyAgent(env=env, number_of_pulls=1000)
-egreedy_agent = EpsilonGreedyAgent(env=env, number_of_pulls=1000) # Epsilon default value = 0.2.
-ucb_agent = UCBAgent(env=env, number_of_pulls=1000) # Default c hyperparameter = 2.
-ts_agent = ThompsonSamplingAgent(env=env, number_of_pulls=1000)
+random_agent = RandomAgent(env=env, number_of_pulls=100000)
+greedy_agent = GreedyAgent(env=env, number_of_pulls=100000)
+egreedy_agent = EpsilonGreedyAgent(env=env, number_of_pulls=100000) # Epsilon default value = 0.2.
+ucb_agent = UCBAgent(env=env, number_of_pulls=100000) # Default c hyperparameter = 2.
+ts_agent = ThompsonSamplingAgent(env=env, number_of_pulls=100000)
 
 # Tell the agent to perform its actions, this returns a dictionary of metrics.
 ra_performance = random_agent.perform_actions()
