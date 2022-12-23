@@ -21,7 +21,7 @@ def cumulative_reward_plot(performance: dict, agent_type: str):
     ax.set_title(f"{agent_type} Performance")
     create_directory(Path("Plots/" + agent_type + "/"))
     plt.savefig(Path("Plots/" + agent_type + "/" + 'cumulative_reward'))
-
+    plt.close()
 
 def actions_taken_plot(performance: dict, agent_type: str):
     ''' Plots a bar chart of the times each action was taken. '''
@@ -36,6 +36,7 @@ def actions_taken_plot(performance: dict, agent_type: str):
     ax.set_xlabel("Bandit Choice")
     ax.set_title(f"{agent_type} Action Selection")
     plt.savefig(Path("Plots/" + agent_type + "/" +'arm_choice'))
+    plt.close()
 
 def act_val_estimate_plot(performance: dict, agent_type: str):
     ''' Plots the action value estimate Q(a) for algorithms that compute it. '''
@@ -49,7 +50,7 @@ def act_val_estimate_plot(performance: dict, agent_type: str):
     ax.set_xlabel("Bandit")
     ax.set_title(f"{agent_type} Estimated Q(a) Value")
     plt.savefig(Path("Plots/" + agent_type + "/" + 'action_value_estimate'))
-
+    plt.close()
 
 def total_regret_plot(performance: dict, agent_type: str):
     ''' Plots the regret of each algorithm. '''
@@ -60,7 +61,7 @@ def total_regret_plot(performance: dict, agent_type: str):
     ax.set_xlabel("Time Steps")
     ax.set_ylabel("Total Regret")
     plt.savefig(Path("Plots/" + agent_type + "/" + "total_regret"))
-
+    plt.close()
 
 def posterior_dists_plot(performance: dict, agent_type="Thompson Sampling"):
     ''' Plots the posterior beta distributions of each distribution for each bandit. '''
@@ -77,13 +78,12 @@ def posterior_dists_plot(performance: dict, agent_type="Thompson Sampling"):
     
     ax.legend(["Bandit %s" %(beta_dists) for beta_dists in range(number_of_bandits)], loc="upper left")
     ax.set_xlabel("Mean Reward")
-
+    ax.set_title("Posterior Beta Distributions. ")
 
     plt.savefig(Path("Plots/" + agent_type + "/" + "Posterior_distributions"))
+    plt.close()
 
-
-
-def plot_all(performance: dict, agent_type: str):
+def plot_all_single(performance: dict, agent_type: str):
     ''' Calls all of the plotting functions. '''
 
     if agent_type == 'Random_Agent':
@@ -102,3 +102,50 @@ def plot_all(performance: dict, agent_type: str):
         actions_taken_plot(performance=performance, agent_type=agent_type)
         act_val_estimate_plot(performance=performance, agent_type=agent_type)
         total_regret_plot(performance=performance, agent_type=agent_type)
+
+
+
+
+
+#---- Plotting comparative charts, will contain data from each agent. ----#
+
+def cumulative_reward_compare_plot(agent_performance: list, names: list):
+    ''' Plot the cumulative reward of each agent for comparison. '''
+
+    fig, ax = plt.subplots()
+
+    for agent in agent_performance:
+        cumulative_reward = agent['cumulative_rewards']
+        ax.plot(cumulative_reward)
+    
+    ax.legend([name for name in names], fontsize=7)
+    ax.set_title("Comparison of Cumulative Reward Between Algorithms. ")
+    ax.set_xlabel("Time steps")
+    ax.set_ylabel("Cumulative Reward")
+    ax.set_ylim(0, 1.0)
+    create_directory(directory_path=Path('Plots/agent_comparisons'))
+    plt.savefig(Path('Plots/agent_comparisons/Cumulative_reward'))
+    plt.close()
+
+
+def action_value_comparison_plot(agent_performance: list, names: list, true_vals: np.array):
+    ''' Plots the estimated action value of each algorithm that uses an action value. '''
+
+    fig, ax = plt.subplots()
+    
+
+    for agent in agent_performance:
+        action_val_estimate = agent['q_values']
+        bandit_number = len(agent['q_values'])
+        x = [i for i in range(bandit_number)]
+        ax.scatter(x=x, y=action_val_estimate, marker='_')
+    
+    ax.scatter(x=[i for i in range(bandit_number)], y=true_vals, facecolors='none', edgecolors='r', marker='o')
+    ax.legend([name for name in names], fontsize=7)
+    ax.set_title("Comparison of Estimated Q Values and True Q values. ")
+    ax.set_xlabel("Bandit Number")
+    ax.set_ylabel("Estimated Action Value")
+    create_directory(directory_path=Path('Plots/agent_comparisons'))
+    plt.savefig(Path('Plots/agent_comparisons/Q_values'))
+    plt.close()
+    
