@@ -171,8 +171,61 @@ $$
 If c is larger, we will explore more, if c is smaller we will explore less. In the code (see update_confidence function in the UCBAgent) I have set this as default to 2, feel free to explore different values for $c$ and see how it affects the performance. 
 
 
+### 2.2.5 Thompson Sampling
+
+Thompson Sampling implements Bayesian updating in order to select actions, it is a simple computation but it works really well! In the experiments I have run, it will constantly outperform the UCB and $\epsilon$-Greedy algorithm. It is also worth noting how old Thompson Sampling is, it was produced in 1933. 
+
+Thompson Sampling selects its actions according to our belief that the action is the optimal action. To understand Thompson Sampling, I need to walk you through the Bayesian approach at multi-armed bandits and probability matching, as both of these topics should help our understanding of the Thompson Algorithm. 
+
+**The Bayesian Approach** 
+
+With the Bayesian approach, we are modeling distributions over the values $p(q(a) | \theta)$, we are trying to model the distribution of expected rewards we get for each action and update our distribution accordingly. The probability that we compute should be interpreted as the belief that $q(a) = x$. Theta is the parameters of the model, for example $\theta$ might contain the means and variances of the distributions if we were using Gaussian distributions.
+
+Using these posterior distributions, we can guide which actions should be taken. 
 
 
+**Probability Matching.** 
+
+In probability matching, we select action $a$ according to what we believe is the best action. This policy is stochastic and is denoted as such:
+
+$$ \pi_t(a) = p(q(a) = \max_{a'}q(a') \space | \space H_{t-1}) $$
+
+Where $H_{t-1}$ is the probability distribution at time step $t-1$, because we have these probability distributions we can reason about which action could be the most optimal action. This policy is also **optimistic in the face of uncertainty** as actions will be selected either if they have a high value estimate, or we are really uncertain. For some intuition, if we are really uncertain of an action, the distribution we for that action should be really wide. However, it can be difficult to compute a policy analytically from these posterior distributions, so there is where Thompson Sampling comes in.
+
+
+**Thompson Sampling.** 
+
+In Thompson Sampling, we still keep track of the posterior distributions of each action, and we will use these distributions to sample an actual action value. We sample each distribution for each action, giving us an action value for each action. 
+
+We the select action according to:
+
+$$
+A_t = \argmax_{a \in A}Q_t(a)
+$$
+
+If we follow this, Thompson Sampling will have a policy as such:
+
+$$ \text{Thompson Sampling} = \pi_t(a) = \mathbb{E}\left[ \space I(Q_t(a) = \max_{a'}Q_t(a'))\space \right] $$
+
+Note that this is the exact same as probability matching. 
+
+$$ \text{Probability Matching} = \pi_t(a) = \left(q(a) = \max_{a'} q(a')\right) $$
+
+But using Thompson Sampling we do not have to compute the probabilites of each action being taken. We simply just sample the distributions and pick our actions greedily. 
+
+Thing of Thompson Sampling as a way of using the posterior distributions for each action to select and action we can take. 
+
+In the code, the prior distribtuions for each action is a uniform distribution between [0,1], and the posterior distributions are beta distributions with the parameters $a = 1$ and $b = 1$. Every time we receive a reward of 1, we increment the $a$ parameter by 1. If the reward is 0 we increment the $b$ parameter by 1. We then choose our actions using Thompson Sampling, sampling each of the distributions and greedily choosing our actions. 
+
+I am quite a visual learner, [this website](https://keisan.casio.com/exec/system/1180573226) really helped me understand how changing the alpha and beta parameters of our posterior distributions effects the samples we will get from it. I encourage you to go here and play around with the values and understand how incrementing the values in the posterior distribution will allow us to select optimal actions. 
+
+### Conclusion. 
+
+There we have it, we have explored quite a lot in this final project. We have spoken about multi-armed bandits, the environment for them, and the algorithms that aim to solve them. Hopefully you now feel confident enough to go through my code and see how I have implemented all of these algorithms. This repo is not aimed to make it the most efficient, I instead wanted to show that how these algorithms work and implement my first project in reinforcement learning. I hope you enjoy!!!
+
+Here are some figures that I ran using this code, there are many more in the plotting code, but these give the best overview of each algorithms performance. 
+
+![Alt text](main_figure/cumulative_reward.png)
 
 ---
 
@@ -185,4 +238,6 @@ If c is larger, we will explore more, if c is smaller we will explore less. In t
 - [Edward Pie](https://www.youtube.com/watch?v=sNamSTJ4qCU) - Great explanation with some example code.
 
 - [Mattia Cinelli](https://github.com/MattiaCinelli) - Has a really detailed repo of RL examples, great to look at for multi armed bandits and beyond. 
+
+- [Lilian Wang](https://lilianweng.github.io/posts/2018-01-23-multi-armed-bandit/) - Blog on the maths behind the algorithms, there is also some code she has written for an implementation of the problem. 
 
