@@ -223,7 +223,7 @@ I am quite a visual learner, [this website](https://keisan.casio.com/exec/system
 
 There we have it, we have explored quite a lot in this final project. We have spoken about multi-armed bandits, the environment for them, and the algorithms that aim to solve them. Hopefully you now feel confident enough to go through my code and see how I have implemented all of these algorithms. This repo is not aimed to make it the most efficient, I instead wanted to show that how these algorithms work and implement my first project in reinforcement learning. I hope you enjoy!!!
 
-Here are some figures that I ran using this code, there are many more in the plotting code, but these give the best overview of each algorithms performance. 
+Here is the figure of the cumulative reward of each agent from an experiment I ran using this code, there are many more in the plotting code, but this give the best overview of each algorithms performance. 
 
 ![Alt text](main_figure/cumulative_reward.png)
 
