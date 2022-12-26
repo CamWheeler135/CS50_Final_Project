@@ -1,6 +1,8 @@
 
 # Welcome to my CS50 final project. 
 
+[Video Demonstration](https://youtu.be/NN_oF9gcSUg) 
+
 ### Definitions. 
 
 | Term | Notation| Description |
@@ -197,10 +199,10 @@ Where $H_{t-1}$ is the probability distribution at time step $t-1$, because we h
 
 In Thompson Sampling, we still keep track of the posterior distributions of each action, and we will use these distributions to sample an actual action value. We sample each distribution for each action, giving us an action value for each action. 
 
-We the select action according to:
+We then select action according to:
 
 $$
-A_t = \argmax_{a \in A}Q_t(a)
+A_t = {\arg\max}_{a \in A}Q_t(a)
 $$
 
 If we follow this, Thompson Sampling will have a policy as such:
