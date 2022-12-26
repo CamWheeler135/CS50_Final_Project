@@ -202,7 +202,7 @@ In Thompson Sampling, we still keep track of the posterior distributions of each
 We then select action according to:
 
 $$
-A_t = {\arg\max}_{a \in A}Q_t(a)
+A_t = \underset{a \in A}{\arg\max}Q_t(a)
 $$
 
 If we follow this, Thompson Sampling will have a policy as such:
