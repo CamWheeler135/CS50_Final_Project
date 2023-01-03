@@ -168,6 +168,50 @@ class EpsilonGreedyAgent():
                 "q_values": self.Q_values, "regret": self.cumulative_regret}
 
 
+class EGDecayAgent(EpsilonGreedyAgent):
+    ''' Agent that takes the action with the highest Q values, but will explore other actions with probability epsilon.
+        This implementation will make epsilon dynamic, causing it to decay over time. Meaning towards the end, the agent
+        should exploit more. '''
+
+    def __init__(self, env, number_of_pulls, epsilon=1, epsilon_decay_rate=0.99, epsilon_min = 0.1):
+        super().__init__(env, number_of_pulls, epsilon)
+        self.epsilon_min = epsilon_min
+        self.epsilon_decay_rate = epsilon_decay_rate
+        self.epsilon_values = []
+
+
+    def decay_epsilon(self):
+        ''' This function will decay epsilon in order to decrease exploration as time steps increase. '''
+        decayed_epsilon = self.epsilon * self.epsilon_decay_rate
+
+        return decayed_epsilon
+
+    def perform_actions(self):
+
+        max_reward = self.env.rewards[np.argmax(self.env.rewards)]
+        
+        for i in tqdm(range(self.number_of_pulls)):
+
+        # Select an action, receive reward, compute cumulative reward and regret, increment arm counter and update Q.
+            selected_action = self.select_action(q_values=self.Q_values, epsilon=self.epsilon)
+            reward, _, _, _ = self.env.step(selected_action)
+            self.rewards.append(reward)
+            self.cumulative_reward.append(sum(self.rewards) / len(self.rewards))
+            action_regret = max_reward - reward
+            self.regret.append(action_regret)
+            self.cumulative_regret.append(sum(self.regret))
+            self.pulled_arm_counter[selected_action] += 1
+
+            # Update the Q value of that action and decay epsilon if epsilon > min epsilon value.
+            self.update_Q(selected_action=selected_action, reward=reward, action_count=self.pulled_arm_counter)
+            if self.epsilon > self.epsilon_min:
+                self.epsilon = self.decay_epsilon()
+            self.epsilon_values.append(self.epsilon)
+
+        return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter,
+                "q_values": self.Q_values, "regret": self.cumulative_regret, 'decay': self.epsilon_values}
+
+
 class UCBAgent():
     ''' Agent uses the upper confidence bounds to compute what actions to select. This agent uses the UCB1 algorithm. '''
 
