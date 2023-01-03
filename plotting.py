@@ -12,7 +12,6 @@ def create_directory(directory_path: str):
     
     Path(directory_path).mkdir(parents=True, exist_ok=True)
 
-
 def cumulative_reward_plot(performance: dict, agent_type: str):
     fig, ax = plt.subplots()
     ax.plot(performance["cumulative_rewards"])
@@ -83,6 +82,16 @@ def posterior_dists_plot(performance: dict, agent_type="Thompson Sampling"):
     plt.savefig(Path("Plots/" + agent_type + "/" + "Posterior_distributions"))
     plt.close()
 
+def plot_epsilon_decay(performance, agent_type):
+    
+    fig, ax = plt.subplots()
+
+    ax.plot(performance['decay'])
+    ax.set_xlabel("Time steps")
+    ax.set_ylabel("Epsilon Value")
+    ax.set_title("Value of Epsilon As It Decays.")
+    plt.savefig(Path("Plots/" + agent_type + "/" + "epsilon_decay_values"))
+
 def plot_all_single(performance: dict, agent_type: str):
     ''' Calls all of the plotting functions. '''
 
@@ -102,10 +111,6 @@ def plot_all_single(performance: dict, agent_type: str):
         actions_taken_plot(performance=performance, agent_type=agent_type)
         act_val_estimate_plot(performance=performance, agent_type=agent_type)
         total_regret_plot(performance=performance, agent_type=agent_type)
-
-
-
-
 
 #---- Plotting comparative charts, will contain data from each agent. ----#
 
