@@ -128,8 +128,8 @@ def cumulative_reward_compare_plot(agent_performance: list, names: list):
     ax.set_xlabel("Time steps")
     ax.set_ylabel("Cumulative Reward")
     ax.set_ylim(0, 1.0)
-    create_directory(directory_path=Path('Plots/agent_comparisons'))
-    plt.savefig(Path('Plots/agent_comparisons/Cumulative_reward'))
+    create_directory(directory_path=Path('Plots/Agent_Comparisons'))
+    plt.savefig(Path('Plots/Agent_Comparisons/Cumulative_reward'))
     plt.close()
 
 
@@ -150,7 +150,23 @@ def action_value_comparison_plot(agent_performance: list, names: list, true_vals
     ax.set_title("Comparison of Estimated Q Values and True Q values. ")
     ax.set_xlabel("Bandit Number")
     ax.set_ylabel("Estimated Action Value")
-    create_directory(directory_path=Path('Plots/agent_comparisons'))
-    plt.savefig(Path('Plots/agent_comparisons/Q_values'))
+    plt.savefig(Path('Plots/Agent_Comparisons/Q_values'))
     plt.close()
+
+def total_reward_comparison(agent_performance: list, names: list):
+
+    fig, ax = plt.subplots()
+
+    names = [name for name in names]
+    total_rewards = [sum(i['rewards']) for i in agent_performance]
+
+    plt.barh(y=names, width=total_rewards)
+    plt.subplots_adjust(left=0.35)
+    ax.set_title("Total Reward Comparison.")
+    ax.set_xlabel('Total Reward')
+
+    plt.savefig(Path('Plots/Agent_Comparisons/Total_reward'))
+    plt.close()
+
+
     
