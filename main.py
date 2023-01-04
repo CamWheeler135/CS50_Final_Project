@@ -62,6 +62,7 @@ plotting.plot_all_single(performance=ts_performance, agent_type="Thompson_Sampli
 agents_performance = [ra_performance, ga_performance, ega_performance, egda_performance, ucb_performance, ts_performance]
 names = ["Random Agent", 'Greedy Agent', 'epsilon-Greedy Agent', 'epsilon-Greedy Decay Agent', 'UCB Agent', 'Thompson Sampling Agent']
 plotting.cumulative_reward_compare_plot(agent_performance=agents_performance, names=names)
+plotting.total_reward_comparison(agent_performance=agents_performance, names=names)
 
 agents_with_q = [ega_performance, ucb_performance, ga_performance]
 names = ['epsilon-Greedy', 'UCB', 'Greedy', 'True Values']
