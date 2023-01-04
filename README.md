@@ -1,7 +1,9 @@
 
 # Welcome to my CS50 final project. 
 
-[Video Demonstration](https://youtu.be/NN_oF9gcSUg) 
+A video description of my project, required to be below 3 minutes by CS50. For an in-depth explanation of the code, please continue and read the full document.
+[Video Demonstration](https://youtu.be/NN_oF9gcSUg)
+
 
 ### Definitions. 
 
@@ -56,6 +58,7 @@ The agents I plan to implement are:
 - Random Agent.
 - Greedy Agent.
 - $\epsilon$-greedy Agent.
+- $\epsilon$-Greedy Decay Agent (Added after submission to CS50).
 - Upper Confidence Bound (UCB) Agent.
 - Thompson Sampling Agent. 
 
@@ -115,7 +118,13 @@ Where $|A|$ denotes the number of choices that the agent can select. Note that t
 
 This is a very popular algorithm, although in this case its very simple, it has been used to great effect. The DeepMind Atari playing agent uses an $\epsilon$-greedy policy!!!!
 
-#### 2.2.4 Upper Confidence Bounds (UCB) Agent.
+#### 2.2.4 The $\epsilon$-Greedy Decay Algorithm. 
+
+Exploring with probability $\epsilon$ is great as it allows our agent to continue to explore other actions in case there is a better option out there. However, the probability of exploration is set in stone during the whole experiment; meaning as the experiment draws to a close, we are still just a likely to try other options as we were at the start. Throughout working with this project, I have seen that the $\epsilon$-Greedy algorithm has accurate estimates of the Q value for each arm at the end of experiments that are just 1000 time steps in length. Yet we continue to explore other options at a set probability. 
+
+This is why I have implemented an $\epsilon$-Greedy Decay Agent, this works in the exact same manner as the $\epsilon$-Greedy Agent, but the value of $\epsilon$ is dynamic. Early in the experiments, the epsilon value is high (the default value = 1), however at each time step, we decay $\epsilon$. We do this by multiplying epsilon by a decay rate (default value = 0.99). This means as time steps increase, epsilon decreases. This will allow the agent to explore early on, while exploiting the knowledge it has gained as time steps increase. 
+
+#### 2.2.5 Upper Confidence Bounds (UCB) Agent.
 
 The UCB agent, is the first agent I am implementing that shows "optimism is the face of uncertainty". What does this mean? UCB allows us to quantify not just the action value estimate but how confident the agent is about that estimate. If we are more unsure about an action, lets be optimistic about its value.
 
@@ -173,7 +182,7 @@ $$
 If c is larger, we will explore more, if c is smaller we will explore less. In the code (see update_confidence function in the UCBAgent) I have set this as default to 2, feel free to explore different values for $c$ and see how it affects the performance. 
 
 
-### 2.2.5 Thompson Sampling
+### 2.2.6 Thompson Sampling
 
 Thompson Sampling implements Bayesian updating in order to select actions, it is a simple computation but it works really well! In the experiments I have run, it will constantly outperform the UCB and $\epsilon$-Greedy algorithm. It is also worth noting how old Thompson Sampling is, it was produced in 1933. 
 
