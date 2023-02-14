@@ -23,12 +23,12 @@ env = BanditEnv(rewards=rewards, reward_probas=reward_probas)
 #---- Agent and Actions Set Up ----#
 
 # Create the agent
-random_agent = RandomAgent(env=env, number_of_pulls=10000)
-greedy_agent = GreedyAgent(env=env, number_of_pulls=10000)
-egreedy_agent = EpsilonGreedyAgent(env=env, number_of_pulls=10000) # Epsilon default value = 0.2.
-egd_agent = EGDecayAgent(env=env, number_of_pulls=10000) # Epsilon default = 1, Epsilon decay rate default = 0.99, Epsilon min default = 0.1
-ucb_agent = UCBAgent(env=env, number_of_pulls=10000) # Default c hyperparameter = 2.
-ts_agent = ThompsonSamplingAgent(env=env, number_of_pulls=10000)
+random_agent = RandomAgent(env=env, number_of_pulls=50000)
+greedy_agent = GreedyAgent(env=env, number_of_pulls=50000)
+egreedy_agent = EpsilonGreedyAgent(env=env, number_of_pulls=50000) # Epsilon default value = 0.2.
+egd_agent = EGDecayAgent(env=env, number_of_pulls=50000) # Epsilon default = 1, Epsilon decay rate default = 0.99, Epsilon min default = 0.1
+ucb_agent = UCBAgent(env=env, number_of_pulls=50000) # Default c hyperparameter = 2.
+ts_agent = ThompsonSamplingAgent(env=env, number_of_pulls=50000)
 
 # Tell the agent to perform its actions, this returns a dictionary of metrics.
 ra_performance = random_agent.perform_actions()
@@ -38,7 +38,7 @@ egda_performance = egd_agent.perform_actions()
 ucb_performance = ucb_agent.perform_actions()
 ts_performance = ts_agent.perform_actions()
 
-#---- Results and Plotting ----#
+# #---- Results and Plotting ----#
 
 print("\nFinished Running, Loading Metrics and Plots.\n")
 
@@ -63,6 +63,7 @@ agents_performance = [ra_performance, ga_performance, ega_performance, egda_perf
 names = ["Random Agent", 'Greedy Agent', 'epsilon-Greedy Agent', 'epsilon-Greedy Decay Agent', 'UCB Agent', 'Thompson Sampling Agent']
 plotting.cumulative_reward_compare_plot(agent_performance=agents_performance, names=names)
 plotting.total_reward_comparison(agent_performance=agents_performance, names=names)
+plotting.total_regret_comparison(agent_performance=agents_performance, names=names)
 
 agents_with_q = [ega_performance, ucb_performance, ga_performance]
 names = ['epsilon-Greedy', 'UCB', 'Greedy', 'True Values']
