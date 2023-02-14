@@ -138,7 +138,6 @@ def action_value_comparison_plot(agent_performance: list, names: list, true_vals
 
     fig, ax = plt.subplots()
     
-
     for agent in agent_performance:
         action_val_estimate = agent['q_values']
         bandit_number = len(agent['q_values'])
@@ -153,7 +152,9 @@ def action_value_comparison_plot(agent_performance: list, names: list, true_vals
     plt.savefig(Path('Plots/Agent_Comparisons/Q_values'))
     plt.close()
 
+
 def total_reward_comparison(agent_performance: list, names: list):
+    ''' Plots the total reward achieved by each agent.'''
 
     fig, ax = plt.subplots()
 
@@ -169,4 +170,21 @@ def total_reward_comparison(agent_performance: list, names: list):
     plt.close()
 
 
-    
+
+
+def total_regret_comparison(agent_performance: list, names: list):
+    ''' Plots the cumulative regret between agents. '''
+
+    fig, ax = plt.subplots()
+
+    for agent in agent_performance:
+        cumulative_regret = agent['regret']
+        ax.plot(cumulative_regret)
+
+    ax.legend([name for name in names], fontsize=7)
+    ax.set_title("Comparison of Cumulative Regret of Each Algorithm")
+    ax.set_xlabel("Time steps")
+    ax.set_ylabel("Cumulative Regret")
+    create_directory(directory_path=Path('Plots/Agent_Comparisons'))
+    plt.savefig(Path('Plots/Agent_Comparisons/Cumulative_regret'))
+    plt.close()
