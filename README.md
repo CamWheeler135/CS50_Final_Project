@@ -240,6 +240,14 @@ Here is the figure of the cumulative reward of each agent from an experiment I r
 
 ---
 
+### Updates
+
+- 14/02/2023 - Correction of regret computation, cumulative regret is visually logarithmic on figures. 
+
+- 03/01/2023 - Addition of Epsilon Greedy Decay algorithm.
+
+- 26/12/2022 - Completed CS50 Project. 
+
 ### References
 
 - [DeepMind x UCL Lectures](https://youtube.com/playlist?list=PLqYmG7hTraZDVH599EItlEWsUOsJbAodm) - Lectures 1 and 2 helped my mathematical and theoretical understanding of RL, multi-armed bandits and the algorithms. 
