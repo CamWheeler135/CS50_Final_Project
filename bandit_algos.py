@@ -25,14 +25,14 @@ class RandomAgent():
         ''' For each time step, the agent will select and action. '''
 
         max_reward = self.env.rewards[np.argmax(self.env.rewards)]
-
+        print(max_reward)
         for i in tqdm(range(self.number_of_pulls)):
             # Select an action, receive a reward, compute cumulative reward and regret and increment arm counter
             selected_action = np.random.choice(self.env.num_of_bandits)
             reward, _, _, _ = self.env.step(selected_action)
             self.rewards.append(reward)
             self.cumulative_reward.append(sum(self.rewards) / len(self.rewards))
-            action_regret = max_reward - reward
+            action_regret = np.max(self.env.reward_probas) - self.env.reward_probas[selected_action]
             self.regret.append(action_regret)
             self.cumulative_regret.append(sum(self.regret))
             self.pulled_arm_counter[selected_action] += 1
@@ -88,7 +88,7 @@ class GreedyAgent():
             reward, _, _, _ = self.env.step(selected_action)
             self.rewards.append(reward)
             self.cumulative_reward.append(sum(self.rewards) / len(self.rewards))
-            action_regret = max_reward - reward
+            action_regret = np.max(self.env.reward_probas) - self.env.reward_probas[selected_action]
             self.regret.append(action_regret)
             self.cumulative_regret.append(sum(self.regret))
             self.pulled_arm_counter[selected_action] += 1
@@ -155,7 +155,7 @@ class EpsilonGreedyAgent():
             reward, _, _, _ = self.env.step(selected_action)
             self.rewards.append(reward)
             self.cumulative_reward.append(sum(self.rewards) / len(self.rewards))
-            action_regret = max_reward - reward
+            action_regret = np.max(self.env.reward_probas) - self.env.reward_probas[selected_action]
             self.regret.append(action_regret)
             self.cumulative_regret.append(sum(self.regret))
             self.pulled_arm_counter[selected_action] += 1
@@ -197,7 +197,7 @@ class EGDecayAgent(EpsilonGreedyAgent):
             reward, _, _, _ = self.env.step(selected_action)
             self.rewards.append(reward)
             self.cumulative_reward.append(sum(self.rewards) / len(self.rewards))
-            action_regret = max_reward - reward
+            action_regret = np.max(self.env.reward_probas) - self.env.reward_probas[selected_action]
             self.regret.append(action_regret)
             self.cumulative_regret.append(sum(self.regret))
             self.pulled_arm_counter[selected_action] += 1
@@ -273,7 +273,7 @@ class UCBAgent():
             reward, _, _, _ = self.env.step(selected_action)
             self.rewards.append(reward)
             self.cumulative_reward.append(sum(self.rewards) / len(self.rewards))
-            action_regret = max_reward - reward
+            action_regret = np.max(self.env.reward_probas) - self.env.reward_probas[selected_action]
             self.regret.append(action_regret)
             self.cumulative_regret.append(sum(self.regret))
             self.pulled_arm_counter[selected_action] += 1
@@ -346,7 +346,7 @@ class ThompsonSamplingAgent():
             # Compute metrics.
             self.rewards.append(reward)
             self.cumulative_reward.append(sum(self.rewards) / len(self.rewards))
-            action_regret = max_reward - reward
+            action_regret = np.max(self.env.reward_probas) - self.env.reward_probas[selected_action]
             self.regret.append(action_regret)
             self.cumulative_regret.append(sum(self.regret))
             self.pulled_arm_counter[selected_action] += 1
