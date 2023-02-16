@@ -24,8 +24,6 @@ class RandomAgent():
     def perform_actions(self):
         ''' For each time step, the agent will select and action. '''
 
-        max_reward = self.env.rewards[np.argmax(self.env.rewards)]
-        print(max_reward)
         for i in tqdm(range(self.number_of_pulls)):
             # Select an action, receive a reward, compute cumulative reward and regret and increment arm counter
             selected_action = np.random.choice(self.env.num_of_bandits)
@@ -78,8 +76,6 @@ class GreedyAgent():
     def perform_actions(self):
         ''' For each time step the agent will select an action according
             according to the highest action value (q_value) '''
-
-        max_reward = self.env.rewards[np.argmax(self.env.rewards)]
 
         for i in tqdm(range(self.number_of_pulls)):
 
@@ -146,8 +142,6 @@ class EpsilonGreedyAgent():
             according to the highest action value (q_value) but select a random
             action according to probability epsilon '''
 
-        max_reward = self.env.rewards[np.argmax(self.env.rewards)]
-
         for i in tqdm(range(self.number_of_pulls)):
 
             # Select an action, receive reward, compute cumulative reward and regret, increment arm counter and update Q.
@@ -186,9 +180,8 @@ class EGDecayAgent(EpsilonGreedyAgent):
 
         return decayed_epsilon
 
-    def perform_actions(self):
 
-        max_reward = self.env.rewards[np.argmax(self.env.rewards)]
+    def perform_actions(self):
         
         for i in tqdm(range(self.number_of_pulls)):
 
@@ -264,8 +257,6 @@ class UCBAgent():
     def perform_actions(self):
         ''' Agent will select an action one time
             before changing to the UCB algorithm. '''
-        
-        max_reward = self.env.rewards[np.argmax(self.env.rewards)]
 
         for i in tqdm(range(self.number_of_pulls)):
 
@@ -336,10 +327,9 @@ class ThompsonSamplingAgent():
     def perform_actions(self):
         ''' For each time step the agent will select and action computed through thompson sampling 
             and perform that action. '''
-        
-        max_reward = self.env.rewards[np.argmax(self.env.rewards)]
-
+    
         for i in tqdm(range(self.number_of_pulls)):
+
             selected_action = self.select_action(prior_dists=self.prior_dists, posterior_dists=self.posterior_dists, action_counter=self.action_counter)
             reward, _, _, _ = self.env.step(selected_action)
 
@@ -357,3 +347,71 @@ class ThompsonSamplingAgent():
         
         return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter, 
                 "posterior_dists": self.posterior_dists, "regret": self.cumulative_regret}
+
+
+class SoftMaxAgent():
+    ''' Agent that utilizes the Softmax algorithm with decaying temperature for action selection. '''
+    
+    def __init__(self, env, number_of_pulls, temperature=0.1):
+        self.env = env
+        self.number_of_pulls = number_of_pulls
+        self.temperature = temperature
+
+        # Things internal to the agent.
+        self.rewards = []
+        self.cumulative_reward = []
+        self.regret = []
+        self.cumulative_regret = []
+        self.pulled_arm_counter = np.zeros(self.env.num_of_bandits)
+        self.Q_values = np.zeros(self.env.num_of_bandits)
+
+
+    def select_action(self):
+        ''' Selects an action according to the Softmax Policy and return it. '''
+
+        # Compute the action probabilites.
+        Q_scaled = self.Q_values / self.temperature
+        Q_normalized = Q_scaled - np.max(Q_scaled)
+        exponential_Q = np.exp(Q_normalized)
+        action_probabilites = exponential_Q / np.sum(exponential_Q)
+
+        # Check all probas add to 1.
+        assert np.isclose(action_probabilites.sum(), 1.0)
+
+        # Select an action.
+        action = np.random.choice(np.arange(len(action_probabilites)), p=action_probabilites)
+
+        return action
+
+    def update_Q(self, selected_action, reward, action_count):
+        ''' Updates the Q value for the action by averaging the immediate rewards
+            over the times that action has been selected. '''
+
+        updated_value = self.Q_values[selected_action] + 1 / action_count[selected_action] * (reward - self.Q_values[selected_action])
+        self.Q_values[selected_action] = updated_value
+
+    def perform_actions(self):
+        ''' For each time step the agent will select and action computed through the softmax algorithm
+            that chooses an action from a probability distribution that favours actions with higher
+            action values, and perform that action. '''
+        
+        for i in tqdm(range(self.number_of_pulls)):
+            
+            selected_action = self.select_action()
+            reward, _, _, _ = self.env.step(selected_action)
+
+            # Compute metrics and update the Q value for that action.
+            self.rewards.append(reward)
+            self.cumulative_reward.append(sum(self.rewards) / len(self.rewards))
+            action_regret = np.max(self.env.reward_probas) - self.env.reward_probas[selected_action]
+            self.regret.append(action_regret)
+            self.cumulative_regret.append(sum(self.regret))
+            self.pulled_arm_counter[selected_action] += 1
+            self.update_Q(selected_action=selected_action, reward=reward, action_count=self.pulled_arm_counter)
+
+        return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter, 
+                "q_values": self.Q_values, "regret": self.cumulative_regret}
+
+class OptimisticInitializationAgent():
+    ''' Agent that utilizes optimistic initialization. '''
+
