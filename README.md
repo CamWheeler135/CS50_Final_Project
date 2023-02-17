@@ -242,6 +242,10 @@ Here is the figure of the cumulative reward of each agent from an experiment I r
 
 ### Updates
 
+- 17/02/2023 - Addition of Optimistic Initialization Algorithm. 
+
+- 16/02/2023 - Addition of the Softmax Algorithm.
+
 - 14/02/2023 - Correction of regret computation, cumulative regret is visually logarithmic on figures. 
 
 - 03/01/2023 - Addition of Epsilon Greedy Decay algorithm.
