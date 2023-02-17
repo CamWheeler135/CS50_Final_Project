@@ -1,6 +1,22 @@
 
 # Welcome to my CS50 final project. 
 
+---
+
+### Updates
+
+- 17/02/2023 - Addition of Optimistic Initialization Algorithm. 
+
+- 16/02/2023 - Addition of the Softmax Algorithm.
+
+- 14/02/2023 - Correction of regret computation, cumulative regret is visually logarithmic on figures. 
+
+- 03/01/2023 - Addition of Epsilon Greedy Decay algorithm.
+
+- 26/12/2022 - Completed CS50 Project. 
+
+---
+
 A video description of my project, required to be below 3 minutes by CS50. For an in-depth explanation of the code, please continue and read the full document.
 [Video Demonstration](https://youtu.be/NN_oF9gcSUg)
 
@@ -61,6 +77,8 @@ The agents I plan to implement are:
 - $\epsilon$-Greedy Decay Agent (Added after submission to CS50).
 - Upper Confidence Bound (UCB) Agent.
 - Thompson Sampling Agent. 
+- Softmax Agent (Added after submission to CS50).
+- Optimistic Initialization Agent (Added after submission to CS50).
 
 #### 2.2.1 The Random Agent.
 
@@ -230,6 +248,31 @@ In the code, the prior distribtuions for each action is a uniform distribution b
 
 I am quite a visual learner, [this website](https://keisan.casio.com/exec/system/1180573226) really helped me understand how changing the alpha and beta parameters of our posterior distributions effects the samples we will get from it. I encourage you to go here and play around with the values and understand how incrementing the values in the posterior distribution will allow us to select optimal actions. 
 
+
+### Softmax
+
+The softmax approach to the multi-armed bandit problem takes into account the Q values of each action, sampling an action from a distribution that is proportional to each actions value. This is such that actions with higher Q values have a higher probability of being chosen. 
+
+Softmax has an important hyperparameter called temperature, this is denoted with $ \tau $ (tau). This controls the algorithms sensitivity to differences in the Q values of each action. If $ \tau $ is approaching infinity, then all actions will be sampled from a uniform distribution. If $ \tau $ is approaching 0, then the action with the highest Q value will be selected with probability 1. Although in practice, researchers tend to just use really big or really small positive numbers as you will see below with the policy for Softmax we need to divide by $ \tau $ making 0 an impractical number. Much like $\epsilon$-greedy, we can also decay temperature such that the algorithm explores more actions at the start, exploiting the knowledge it has gained towards the end of the iterations. However, in my implementation, I have kept temperature constant, and it appears to perform really well!
+
+The policy of the Softmax algorithm is such:
+
+$$ \pi(a) = \frac{\exp\left( \frac{Q(a)}{\tau}\right)}{\sum_{b=0}^B \exp \left( \frac{Q(b)}{\tau} \right)} $$
+
+
+### Optimistic Initialization  
+
+Optimistic Initialization is a rather simple but effective approach to multi-armed bandits. I like to think of it as the Greedy algorithms clever sibling. Much like the greedy algorithm, Optimistic Initialization selects its actions by choosing the action with the highest Q value estimate at that iteration. Where it differs, is the set up of the problem itself. 
+
+When initializing the agent, instead of setting all Q values to 0, we set them to the highest reward possible (in this implementation I am using Bernoulli bandits so it is 1). Alongside the Q values, we also initialize the counts to a higher value. Why? Well as the algorithm starts to select actions, it will be consistently disappointed with the results it is getting, which will reduce the Q value of that action. But since all of the actions have been initialized to high values, the agent will go and explore another action, this repeats until the agent settles on the action with the highest source of reward. Initializing the Q value to a high number encourages the agent to explore actions that have not been explored enough. 
+
+The more the agent selects an action, the close and closer it will converge to its true value. Eventually, Optimistic Initialization will end up on the best option. 
+
+It is worth noting that we need to know the highest reward possible in the environment if we want to get this correct. This is a downside of using this algorithm, if the MDP was not available to use (it is here) we would not be able to use Optimistic Initialization effectively. If we set the value too high, we do not converge quickly enough on the correct action, if we set it too low, the algorithm will no longer be "optimistic" about the Q values so will not work. 
+
+Furthermore, setting the counts to a higher value is a representation of our uncertainty about the estimate, we find the optimal counts bonus with tuning, but we are having to place our cards down on the table at the start of each experiment which is impractical, we would much rather compute uncertainty about our estimates on the fly, like in the UCB algorithm. 
+
+
 ### Conclusion. 
 
 There we have it, we have explored quite a lot in this final project. We have spoken about multi-armed bandits, the environment for them, and the algorithms that aim to solve them. Hopefully you now feel confident enough to go through my code and see how I have implemented all of these algorithms. This repo is not aimed to make it the most efficient, I instead wanted to show that how these algorithms work and implement my first project in reinforcement learning. I hope you enjoy!!!
@@ -239,18 +282,6 @@ Here is the figure of the cumulative reward of each agent from an experiment I r
 ![Alt text](main_figure/cumulative_reward.png)
 
 ---
-
-### Updates
-
-- 17/02/2023 - Addition of Optimistic Initialization Algorithm. 
-
-- 16/02/2023 - Addition of the Softmax Algorithm.
-
-- 14/02/2023 - Correction of regret computation, cumulative regret is visually logarithmic on figures. 
-
-- 03/01/2023 - Addition of Epsilon Greedy Decay algorithm.
-
-- 26/12/2022 - Completed CS50 Project. 
 
 ### References
 
@@ -263,4 +294,6 @@ Here is the figure of the cumulative reward of each agent from an experiment I r
 - [Mattia Cinelli](https://github.com/MattiaCinelli) - Has a really detailed repo of RL examples, great to look at for multi armed bandits and beyond. 
 
 - [Lilian Wang](https://lilianweng.github.io/posts/2018-01-23-multi-armed-bandit/) - Blog on the maths behind the algorithms, there is also some code she has written for an implementation of the problem. 
+
+- [Deep Reinforcement Learning](https://www.manning.com/books/grokking-deep-reinforcement-learning) - A great book for RL, I am currently going through it. 
 
