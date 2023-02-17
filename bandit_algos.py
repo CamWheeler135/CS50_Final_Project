@@ -412,6 +412,62 @@ class SoftMaxAgent():
         return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter, 
                 "q_values": self.Q_values, "regret": self.cumulative_regret}
 
+
 class OptimisticInitializationAgent():
     ''' Agent that utilizes optimistic initialization. '''
 
+    def __init__(self, env, number_of_pulls, optimistic_Q_values=1.0, counter_bonus=100):
+        self.env = env
+        self.number_of_pulls = number_of_pulls
+
+        # Things internal to the agent.
+        self.rewards = []
+        self.cumulative_reward = []
+        self.regret = []
+        self.cumulative_regret = []
+        
+        # Note how these are different compared to the other algorithms. 
+        self.pulled_arm_counter = np.full((self.env.num_of_bandits), counter_bonus, dtype=np.float64)
+        self.Q_values = np.full((self.env.num_of_bandits), optimistic_Q_values, dtype=np.float64)
+
+    
+    def select_action(self, q_values):
+        ''' Greedily choose the action with the highest Q values, breaking ties randomly. '''
+
+        # Finds array of indices of possible actions (if there is a tie there will be more than 1 element in the array.)
+        possible_actions = np.where(q_values == q_values[np.argmax(q_values)])
+
+        # In the case of ties, choose on of those actions randomly.  
+        selected_action = np.random.choice(possible_actions[0])
+
+        return selected_action
+
+
+    def update_Q(self, selected_action, reward, action_count):
+        ''' Updates the Q value for the action by averaging the immediate rewards
+            over the times that action has been selected. '''
+
+        updated_value = self.Q_values[selected_action] + 1 / action_count[selected_action] * (reward - self.Q_values[selected_action])
+        self.Q_values[selected_action] = updated_value
+
+
+    def perform_actions(self):
+        ''' Agent optimistically initializes Q values and Bonus count, then selects actions greedily,
+            breaking ties of Q values randomly. '''
+
+        for i in tqdm(range(self.number_of_pulls)):
+
+            selected_action = self.select_action(q_values=self.Q_values)
+            reward, _, _, _ = self.env.step(selected_action)
+            self.rewards.append(reward)
+            self.cumulative_reward.append(sum(self.rewards) / len(self.rewards))
+            action_regret = np.max(self.env.reward_probas) - self.env.reward_probas[selected_action]
+            self.regret.append(action_regret)
+            self.cumulative_regret.append(sum(self.regret))
+            self.pulled_arm_counter[selected_action] += 1
+
+            # Update the Q value of that action.
+            self.update_Q(selected_action=selected_action, reward=reward, action_count=self.pulled_arm_counter)
+
+        return {"rewards": self.rewards, "cumulative_rewards": self.cumulative_reward, "arm_counter": self.pulled_arm_counter, 
+                "q_values": self.Q_values, "regret": self.cumulative_regret}
